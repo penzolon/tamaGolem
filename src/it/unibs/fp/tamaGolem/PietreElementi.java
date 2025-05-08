@@ -1,3 +1,4 @@
+package it.unibs.fp.tamaGolem;
 public class PietreElementi {
     private String tipoPietra;
     private int potenza;

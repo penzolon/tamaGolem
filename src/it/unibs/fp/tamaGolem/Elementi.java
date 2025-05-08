@@ -1,3 +1,4 @@
+package it.unibs.fp.tamaGolem;
 public enum Elementi {
     MAGMA,
     ETERE,
