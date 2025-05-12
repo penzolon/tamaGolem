@@ -10,14 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Equilibrio {
+/**
+ * Una mappa annidata: per ogni elemento A (String), contiene una sotto-mappa che associa
+ * altri elementi B a un valore Integer, che rappresenta l’equilibrio tra A e B.
+ */	
     private final Map<String, Map<String, Integer>> equilibrioMap;
+//	Un array statico di tutti gli elementi disponibili. 
     private static String[] allElementi;
+//	La lista di elementi selezionati che verranno usati nell’equilibrio.
     private final List<String> elementi;
 
-    /**
-     * Costruttore che riceve il numero di elementi e il file JSON di definizione.
-     * Non utilizza alcun file di default.
-     */
     public Equilibrio(int numElementi, File file) {
         allElementi = JsonReader.parseFile(file);
         if (allElementi.length < numElementi) {
@@ -30,6 +32,16 @@ public class Equilibrio {
         generaEquilibrio();
     }
 
+    /**
+     * Estrae un numero specificato di elementi unici da `allElementi` e li aggiunge alla lista `elementi`.
+     * 
+     * Il metodo esegue un'estrazione casuale di indici da `allElementi`, assicurandosi che ogni indice 
+     * estratto sia unico, in modo da evitare duplicazioni. Gli indici estratti vengono memorizzati nella 
+     * lista `interiEstratti`, mentre gli elementi corrispondenti agli indici estratti vengono aggiunti alla lista 
+     * `elementi`. Questo processo garantisce che la lista `elementi` contenga esattamente `numElementi` 
+     * elementi unici selezionati casualmente da `allElementi`.
+     */
+    
     private void estraiElementi(int numElementi) {
         List<Integer> interiEstratti = new ArrayList<>();
         for (int i = 0; i < numElementi; i++) {
@@ -52,18 +64,47 @@ public class Equilibrio {
                 throw new IllegalStateException("Impossibile generare un equilibrio stabile dopo " + Costanti.MAX_TENTATIVI + " tentativi globali.");
             }
 
+           /**
+            * Pulisce la mappa equilibrioMap, che è una mappa principale dove ogni elemento è
+            * associato a un'altra mappa (contenente le sue interazioni con gli altri elementi).
+            * Questo passaggio è essenziale per resettare le informazioni delle interazioni precedenti
+            * prima di iniziare una nuova generazione di equilibrio.
+            * Inizializza una nuova mappa vuota per ogni elemento in `elementi`.
+            * Ogni elemento avrà una mappa associata che conterrà le interazioni con gli altri elementi.
+            */
+            
             equilibrioMap.clear();
-            // Inizializza mappe vuote per ogni elemento
             for (String el : elementi) {
                 equilibrioMap.put(el, new HashMap<>());
             }
 
-            // Genera interazioni mantenendo antisimmetria e prova a bilanciare riga per riga
+            /**
+             * Viene dichiarata una variabile booleana tutteRigheOk e inizializzata a true.
+			 * Questo serve per monitorare se tutte le righe di interazioni sono state generate correttamente.
+			 * Se una riga non viene generata correttamente, la variabile verrà impostata su false e il ciclo
+			 * principale (quello che genera tutte le interazioni) si interromperà.
+			 * Inizia un ciclo for che itera su ogni elemento nella lista elementi.
+			 * Per ogni elemento (elemI), il metodo cercherà di generare le sue interazioni con gli altri elementi.
+			 * Per ogni elemI, viene recuperata la sua mappa di interazioni dalla equilibrioMap.
+			 * La mappa associata a elemI conterrà i valori delle interazioni tra elemI e gli altri elementi.
+             */
+
             boolean tutteRigheOk = true;
             for (String elemI : elementi) {
                 Map<String, Integer> mappaI = equilibrioMap.get(elemI);
                 int tentativiRiga = 0;
 
+                /**
+                 * Viene pulita la mappa di interazioni di elemI (l'elemento corrente).
+				 * Questo è importante per assicurarsi che ogni volta che il ciclo tenta di generare 
+				 * nuove interazioni, non ci siano dati residui da tentativi precedenti.
+				 * Un ciclo che itera su tutti gli elementi nella lista elementi per generare le interazioni tra elemI.
+				 * Evita che un elemento venga interagito con sé stesso. Le interazioni sono solo tra elementi differenti.
+				 * Se la potenza risultante è 0, viene forzata a 1. Questo evita che l'interazione sia neutra (0)
+				 * e garantisce che ci sia sempre un'influenza, sia positiva che negativa.
+				 * assegna la potenza opposta (-potenza) per l'interazione inversa, tra elemJ e elemI.
+				 * Questo garantisce che se elemI interagisce positivamente con elemJ, elemJ interagirà negativamente con elemI
+                 */
                 do {
                     mappaI.clear();
                     for (String elemJ : elementi) {
@@ -139,14 +180,12 @@ public class Equilibrio {
               .append(Costanti.RIGA_ELEMENTI_ATTACCANTI).append("\n")
               .append(Costanti.COLONNA_ELEMENTI_DIFESA).append("\n\n");
 
-        // Intestazione tabella
         tabella.append(Costanti.ANGOLO_SUPERIORE_SINISTRO_TABELLA).append(lineaSeparatrice);
         for (int k = 0; k < elementi.size(); k++) {
             tabella.append(Costanti.INCROCIO_SUPERIORE).append(lineaOrizzontale);
         }
         tabella.append(Costanti.ANGOLO_SUPERIORE_DESTRO_TABELLA).append("\n");
 
-        // Nomi colonne
         tabella.append(Costanti.BORDO_VERTICALE_TABELLA)
               .append(" ".repeat(4))
               .append(Costanti.FRECCIA_GIU)
@@ -158,14 +197,12 @@ public class Equilibrio {
         }
         tabella.append(Costanti.BORDO_VERTICALE_TABELLA).append("\n");
 
-        // Riga separatrice
         tabella.append(Costanti.INCROCIO_SINISTRO).append(lineaSeparatrice);
         for (int k = 0; k < elementi.size(); k++) {
             tabella.append(Costanti.INCROCIO_CENTRALE).append(lineaOrizzontale);
         }
         tabella.append(Costanti.INCROCIO_DESTRO).append("\n");
 
-        // Corpo tabella
         for (int i = 0; i < elementi.size(); i++) {
             String attaccante = elementi.get(i);
             tabella.append(Costanti.BORDO_VERTICALE_TABELLA)
@@ -192,7 +229,6 @@ public class Equilibrio {
             }
         }
 
-        // Chiusura tabella
         tabella.append(Costanti.ANGOLO_INFERIORE_SINISTRO_TABELLA).append(lineaSeparatrice);
         for (int k = 0; k < elementi.size(); k++) {
             tabella.append(Costanti.INCROCIO_INFERIORE).append(lineaOrizzontale);
