@@ -1,5 +1,5 @@
-package it.unibs.fp.tamaGolem;
-public class Costanti {
+package it.unibs.fp.tamaGolem.Costanti;
+public class CostantiString {
     public static final String ELEMENTI_PATH = "config/elementi" ;
     public static final String ELEMENTI_DEFAULT = "src/file/cosmicHorror.json" ;
     public static final int MIN_ELEMENTI = 3 ;
