@@ -11,8 +11,6 @@ public class ScortaPietre {
         this.scortaPietre = new ArrayList<>();
     }
 
-
-
     public ArrayList<PietreElementi> getScortaPietre() {
         return scortaPietre;
     }

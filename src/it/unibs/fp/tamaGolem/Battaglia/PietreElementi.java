@@ -6,7 +6,6 @@ import java.util.Iterator;
 public class PietreElementi {
     private String nome;
 
-
     public PietreElementi(String nome) {
         this.nome = nome;
     }

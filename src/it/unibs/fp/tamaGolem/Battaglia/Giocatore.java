@@ -6,6 +6,7 @@ import it.unibs.fp.tamaGolem.Elementi;
 import it.unibs.fp.tamaGolem.Equilibrio;
 
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 public class Giocatore {
@@ -38,22 +39,27 @@ public class Giocatore {
         // Implementa la logica per l'invocazione di un TamaGolem
         if (numTamaGolemEliminati < numTamaGolem) {
             TamaGolem nuovoGolem = new TamaGolem(CostantiPartita.VITA_TAMAGOLEM);
-            ArrayList<String> listaPietre = selezionaPietre(numPietre, equilibrio, scortaPietre);
+            Deque<PietreElementi> listaPietre = selezionaPietre(numPietre, equilibrio, scortaPietre, nuovoGolem);
             System.out.println(listaPietre.toString());
         } else {
+            System.out.println("Hai già invocato il numero massimo di TamaGolem.");
+            // Aggiungi logica per gestire il caso in cui il numero massimo di TamaGolem è stato raggiunto
         }
     }
 
-    public ArrayList<String> selezionaPietre(int numPietre, Equilibrio equilibrio, ScortaPietre scortaPietre) {
+    public Deque<PietreElementi> selezionaPietre(int numPietre, Equilibrio equilibrio, ScortaPietre scortaPietre, TamaGolem tamaGolem) {
         List<String> listaElementi = equilibrio.getElementi();
-        ArrayList<String> listaPietre = new ArrayList<>();
-
-        // Stampa gli elementi disponibili
-        for (String e : listaElementi) {
-            System.out.println((listaElementi.indexOf(e) + 1) + ". " + e);
+        Deque<PietreElementi> listaPietre = tamaGolem.getListaPietre();
+        System.out.println("\nPietre disponibili:");
+        for (int i = 0; i < listaElementi.size(); i++) {
+            String elemento = listaElementi.get(i);
+            long count = scortaPietre.getScortaPietre().stream()
+                    .filter(p -> p.getNome().equals(elemento))
+                    .count();
+            System.out.println((i + 1) + ". " + elemento + " (" + count + " disponibili)");
         }
 
-        System.out.printf("Seleziona le %d pietre per il tuo TamaGolem: \n", numPietre);
+        System.out.printf("Seleziona %d pietre per il tuo TamaGolem: \n", numPietre);
         String nomeElemento;
 
         for (int i = 0; i < numPietre; i++) {
@@ -67,7 +73,7 @@ public class Giocatore {
                     System.out.println("Pietra non disponibile, seleziona un'altra pietra.");
                 } else {
                     System.out.println("Pietra selezionata: " + nomeElemento);
-                    listaPietre.add(nomeElemento); // Aggiungi la pietra solo se disponibile
+                    listaPietre.add(new PietreElementi(nomeElemento));
                 }
             } while (!trovato); // Continua finché la pietra non è disponibile
         }
