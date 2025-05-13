@@ -48,17 +48,12 @@ public class Giocatore {
         List<String> listaElementi = equilibrio.getElementi();
         ArrayList<String> listaPietre = new ArrayList<>();
         for (String e : listaElementi) {
-            System.out.println(e);
+            System.out.println((listaElementi.indexOf(e) + 1) + ". "+ e);
         }
-        System.out.printf("Seleziona le %d pietre per il tuo TamaGolem: ", numPietre);
+        System.out.printf("Seleziona le %d pietre per il tuo TamaGolem: \n", numPietre);
         for (int i = 0; i < numPietre; i++) {
-            String pietra = InputData.readNonEmptyString("->", false);
-            if (pietra.equals(equilibrio.getElementi().get(i))) {
-                listaPietre.add(equilibrio.getElementi().get(i));
-                } else {
-                System.out.println("Pietra non valida, riprova.");
-                i--;
-                }
+            int idPietra = InputData.readIntegerBetween("-> ", 1, equilibrio.getElementi().size());
+            listaPietre.add(listaElementi.get(idPietra - 1));
             }
         return listaPietre;
         }

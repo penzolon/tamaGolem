@@ -7,5 +7,4 @@ public class Main {
         BattagliaGolem battagliaGolem = new BattagliaGolem();
         battagliaGolem.eseguiPartita();
     }
-
 }

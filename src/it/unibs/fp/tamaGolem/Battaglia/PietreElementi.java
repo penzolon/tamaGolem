@@ -7,14 +7,10 @@ public class PietreElementi {
 
     Deque<PietreElementi> listaPietre = new Deque<PietreElementi>() {
         @Override
-        public void addFirst(PietreElementi pietreElementi) {
-
-        }
+        public void addFirst(PietreElementi pietreElementi) {}
 
         @Override
-        public void addLast(PietreElementi pietreElementi) {
-
-        }
+        public void addLast(PietreElementi pietreElementi) {}
 
         @Override
         public boolean offerFirst(PietreElementi pietreElementi) {
