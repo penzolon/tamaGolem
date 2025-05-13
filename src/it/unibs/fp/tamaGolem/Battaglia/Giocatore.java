@@ -34,27 +34,34 @@ public class Giocatore {
         return listaGolem;
     }
 
-    public void invocazioneTamaGolem(int numTamaGolem, int numPietre, Equilibrio equilibrio) {
+    public void invocazioneTamaGolem(int numTamaGolem, int numPietre, Equilibrio equilibrio, ScortaPietre scortaPietre) {
         // Implementa la logica per l'invocazione di un TamaGolem
         if (numTamaGolemEliminati < numTamaGolem) {
             TamaGolem nuovoGolem = new TamaGolem(CostantiPartita.VITA_TAMAGOLEM);
-            ArrayList<String> listaPietre = selezionaPietre(numPietre, equilibrio);
+            ArrayList<String> listaPietre = selezionaPietre(numPietre, equilibrio, scortaPietre);
             System.out.println(listaPietre.toString());
         } else {
         }
     }
 
-    public ArrayList<String> selezionaPietre(int numPietre, Equilibrio equilibrio) {
+    public ArrayList<String> selezionaPietre(int numPietre, Equilibrio equilibrio, ScortaPietre scortaPietre) {
         List<String> listaElementi = equilibrio.getElementi();
         ArrayList<String> listaPietre = new ArrayList<>();
         for (String e : listaElementi) {
-            System.out.println((listaElementi.indexOf(e) + 1) + ". "+ e);
+            System.out.println((listaElementi.indexOf(e) + 1) + ". " + e);
         }
         System.out.printf("Seleziona le %d pietre per il tuo TamaGolem: \n", numPietre);
         for (int i = 0; i < numPietre; i++) {
             int idPietra = InputData.readIntegerBetween("-> ", 1, equilibrio.getElementi().size());
-            listaPietre.add(listaElementi.get(idPietra - 1));
+            String nomeElemento = listaElementi.get(idPietra - 1);
+            listaPietre.add(nomeElemento);
+            for (PietreElementi p : scortaPietre.getScortaPietre()) {
+                if (p.getNome().equals(nomeElemento)) {
+                    scortaPietre.getScortaPietre().remove(p);
+                    break;
+                }
             }
-        return listaPietre;
         }
+        return listaPietre;
+    }
 }

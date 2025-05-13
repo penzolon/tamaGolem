@@ -61,17 +61,19 @@ public class BattagliaGolem {
             equilibrio = new Equilibrio(numElementi, file) ;
             System.out.println(equilibrio.toString());
             calcolaParametriDaInput();
-            invocaTamaGolem(giocatore1, giocatore2);
+            ScortaPietre scorta = new ScortaPietre();
+            scorta.aggiungiPietre(numPietrePerElemento, equilibrio);
+            invocaTamaGolem(giocatore1, giocatore2, scorta);
         } while(InputData.readYesOrNo("Continuare")) ;
     }
 
-    private void invocaTamaGolem(Giocatore giocatore1, Giocatore giocatore2) {
+    private void invocaTamaGolem(Giocatore giocatore1, Giocatore giocatore2, ScortaPietre scortaPietre) {
         if (sceltaPrimoGiocatore()) {
-            giocatore1.invocazioneTamaGolem(numTamaGolem, numPietre, equilibrio);
-            giocatore2.invocazioneTamaGolem(numTamaGolem, numPietre, equilibrio);
+            giocatore1.invocazioneTamaGolem(numTamaGolem, numPietre, equilibrio, scortaPietre);
+            giocatore2.invocazioneTamaGolem(numTamaGolem, numPietre, equilibrio, scortaPietre);
         } else {
-            giocatore2.invocazioneTamaGolem(numTamaGolem, numPietre, equilibrio);
-            giocatore1.invocazioneTamaGolem(numTamaGolem, numPietre, equilibrio);
+            giocatore2.invocazioneTamaGolem(numTamaGolem, numPietre, equilibrio, scortaPietre);
+            giocatore1.invocazioneTamaGolem(numTamaGolem, numPietre, equilibrio, scortaPietre);
 
         }
     }
@@ -93,12 +95,10 @@ public class BattagliaGolem {
             numTamaGolem = (int) Math.ceil((numeroElementi - 1) * (numeroElementi - 2) / (double) (2 * numPietre));
             qtScortaComunePietre = (int) Math.ceil((2 * numTamaGolem * numPietre) / (double) numeroElementi) * numeroElementi;
             numPietrePerElemento = qtScortaComunePietre / numeroElementi;
-//      System.out.println("N = " + numeroElementi + ", G = " + numeroGolem + ", P = " + numPietre + ", S = " + qtScortaComunePietre + ", S/G = " + numPietrePerElemento);
+            //System.out.println("N = " + numeroElementi + ", G = " + numTamaGolem + ", P = " + numPietre + ", S = " + qtScortaComunePietre + ", S/G = " + numPietrePerElemento);
         }
 
         public boolean estrazionePrimoGiocatore () {
-            /* */
-            /* */
             return RandomDraws.drawBoolean();
         }
         
