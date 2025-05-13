@@ -50,6 +50,7 @@ public class BattagliaGolem {
         int numElementi = 0 ;
         int numFile = 1 ;
         File file = null ;
+        boolean trovato = false ;
         JsonReader jsonReader = new JsonReader(CostantiString.ELEMENTI_PATH) ;
         do {
             Giocatore giocatore1 = new Giocatore(0);

@@ -10,9 +10,13 @@ public class ScortaPietre {
     public ScortaPietre() {
         this.scortaPietre = new ArrayList<>();
     }
+
+
+
     public ArrayList<PietreElementi> getScortaPietre() {
         return scortaPietre;
     }
+
     public ArrayList<PietreElementi> aggiungiPietre(int numPietrePerElemento, Equilibrio equilibrio) {
         for (int i = 0; i < numPietrePerElemento; i++) {
             for (String pietra : equilibrio.getElementi()) {
@@ -20,5 +24,15 @@ public class ScortaPietre {
             }
         }
         return scortaPietre;
+    }
+    public static boolean rimuoviPietraDaScorta(ScortaPietre scortaPietre, String nomeElemento) {
+        boolean trovato = false;
+        for (PietreElementi p : scortaPietre.getScortaPietre()) {
+            if (p.getNome().equals(nomeElemento)) {
+                trovato = scortaPietre.getScortaPietre().remove(p);
+                break;
+            }
+        }
+        return trovato;
     }
 }

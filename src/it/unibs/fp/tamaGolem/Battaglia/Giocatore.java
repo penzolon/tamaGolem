@@ -47,21 +47,31 @@ public class Giocatore {
     public ArrayList<String> selezionaPietre(int numPietre, Equilibrio equilibrio, ScortaPietre scortaPietre) {
         List<String> listaElementi = equilibrio.getElementi();
         ArrayList<String> listaPietre = new ArrayList<>();
+
+        // Stampa gli elementi disponibili
         for (String e : listaElementi) {
             System.out.println((listaElementi.indexOf(e) + 1) + ". " + e);
         }
+
         System.out.printf("Seleziona le %d pietre per il tuo TamaGolem: \n", numPietre);
+        String nomeElemento;
+
         for (int i = 0; i < numPietre; i++) {
-            int idPietra = InputData.readIntegerBetween("-> ", 1, equilibrio.getElementi().size());
-            String nomeElemento = listaElementi.get(idPietra - 1);
-            listaPietre.add(nomeElemento);
-            for (PietreElementi p : scortaPietre.getScortaPietre()) {
-                if (p.getNome().equals(nomeElemento)) {
-                    scortaPietre.getScortaPietre().remove(p);
-                    break;
+            boolean trovato;
+            do {
+                int idPietra = InputData.readIntegerBetween("-> ", 1, equilibrio.getElementi().size());
+                nomeElemento = listaElementi.get(idPietra - 1);
+                trovato = ScortaPietre.rimuoviPietraDaScorta(scortaPietre, nomeElemento);
+
+                if (!trovato) {
+                    System.out.println("Pietra non disponibile, seleziona un'altra pietra.");
+                } else {
+                    System.out.println("Pietra selezionata: " + nomeElemento);
+                    listaPietre.add(nomeElemento); // Aggiungi la pietra solo se disponibile
                 }
-            }
+            } while (!trovato); // Continua finché la pietra non è disponibile
         }
+
         return listaPietre;
     }
 }
