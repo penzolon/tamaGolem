@@ -114,7 +114,7 @@ public class Equilibrio {
                     mappaI.clear();
                     for (String elemJ : elementi) {
                         if (!elemI.equals(elemJ)) {
-                            int potenza = RandomDraws.drawInteger(-CostantiString.MASSIMO_POTENZA, CostantiString.MASSIMO_POTENZA);
+                            int potenza = RandomDraws.drawInteger(CostantiString.MASSIMO_POTENZA, CostantiString.MASSIMO_POTENZA);
                             if (potenza == 0) potenza = 1;
                             equilibrioMap.get(elemI).put(elemJ, potenza);
                             equilibrioMap.get(elemJ).put(elemI, -potenza);

@@ -97,7 +97,10 @@ public class BattagliaGolem {
         }
 
         public boolean estrazionePrimoGiocatore () {
+            /* */
             return RandomDraws.drawBoolean();
         }
+        
+
     }
 
