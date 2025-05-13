@@ -116,7 +116,7 @@ public class Equilibrio {
                         }
                     }
                     tentativiRiga++;
-                } while ((sommaInterazioni(elemI) != 0 || tutteNulle(elemI)) && tentativiRiga < Costanti.MAX_TENTATIVI);
+                } while ((sommaInterazioni(elemI) != 0 || intNullaElemDiversi(elemI)) && tentativiRiga < Costanti.MAX_TENTATIVI);
 
                 if (tentativiRiga >= Costanti.MAX_TENTATIVI) {
                     tutteRigheOk = false;
@@ -136,11 +136,19 @@ public class Equilibrio {
                             .sum();
     }
 
-    private boolean tutteNulle(String elemento) {
-        return equilibrioMap.get(elemento)
-                            .values()
-                            .stream()
-                            .allMatch(val -> val == 0);
+    private boolean intNullaElemDiversi(String elemento) {
+        boolean zeri = false ;
+
+        for(String elemI: elementi) {
+            if(!elemI.equals(elemento)) {
+                if(equilibrioMap.get(elemento).getOrDefault(elemI, 0) == 0) {
+                    zeri = true;
+                    break;
+                }
+            }
+        }
+
+        return zeri;
     }
 
     @Override
