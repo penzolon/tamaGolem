@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import it.unibs.fp.tamaGolem.Costanti.CostantiString;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -35,7 +37,7 @@ public class JsonReader {
                     JsonElement element = JsonParser.parseReader(reader);
                     if (element.isJsonArray()) {
                         JsonArray array = element.getAsJsonArray();
-                        if (array.size() >= Costanti.MIN_ELEMENTI) {
+                        if (array.size() >= CostantiString.MIN_ELEMENTI) {
                             boolean tuttoStringhe = true;
                             for (JsonElement e : array) {
                                 if (!e.isJsonPrimitive() || !e.getAsJsonPrimitive().isString()) {

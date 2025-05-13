@@ -2,6 +2,7 @@ package it.unibs.fp.tamaGolem;
 
 import it.unibs.fp.myutil.inputOutput.AnsiColors;
 import it.unibs.fp.myutil.inputOutput.RandomDraws;
+import it.unibs.fp.tamaGolem.Costanti.CostantiString;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,11 +26,13 @@ public class Equilibrio {
         if (allElementi.length < numElementi) {
             throw new IllegalArgumentException("Numero di elementi richiesto superiore a quelli definiti nel file.");
         }
-
         equilibrioMap = new HashMap<>();
-        elementi = new ArrayList<>();
-        estraiElementi(numElementi);
+        elementi = estraiElementi(numElementi);
         generaEquilibrio();
+    }
+
+    public List<String> getElementi() {
+        return elementi;
     }
 
     /**
@@ -42,8 +45,9 @@ public class Equilibrio {
      * elementi unici selezionati casualmente da `allElementi`.
      */
     
-    private void estraiElementi(int numElementi) {
+    private List<String> estraiElementi(int numElementi) {
         List<Integer> interiEstratti = new ArrayList<>();
+        List<String> elementi = new ArrayList<>();
         for (int i = 0; i < numElementi; i++) {
             int interoEstratto;
             do {
@@ -52,6 +56,7 @@ public class Equilibrio {
             interiEstratti.add(interoEstratto);
             elementi.add(allElementi[interoEstratto]);
         }
+        return elementi;
     }
 
     private void generaEquilibrio() {
@@ -60,8 +65,8 @@ public class Equilibrio {
 
         while (!equilibrato) {
             tentativiGlobali++;
-            if (tentativiGlobali > Costanti.MAX_TENTATIVI) {
-                throw new IllegalStateException("Impossibile generare un equilibrio stabile dopo " + Costanti.MAX_TENTATIVI + " tentativi globali.");
+            if (tentativiGlobali > CostantiString.MAX_TENTATIVI) {
+                throw new IllegalStateException("Impossibile generare un equilibrio stabile dopo " + CostantiString.MAX_TENTATIVI + " tentativi globali.");
             }
 
            /**
@@ -77,7 +82,7 @@ public class Equilibrio {
             for (String el : elementi) {
                 equilibrioMap.put(el, new HashMap<>());
             }
-
+            
             /**
              * Viene dichiarata una variabile booleana tutteRigheOk e inizializzata a true.
 			 * Questo serve per monitorare se tutte le righe di interazioni sono state generate correttamente.
@@ -109,16 +114,20 @@ public class Equilibrio {
                     mappaI.clear();
                     for (String elemJ : elementi) {
                         if (!elemI.equals(elemJ)) {
-                            int potenza = RandomDraws.drawInteger(-Costanti.MASSIMO_POTENZA, Costanti.MASSIMO_POTENZA);
+                            int potenza = RandomDraws.drawInteger(-CostantiString.MASSIMO_POTENZA, CostantiString.MASSIMO_POTENZA);
                             if (potenza == 0) potenza = 1;
                             equilibrioMap.get(elemI).put(elemJ, potenza);
                             equilibrioMap.get(elemJ).put(elemI, -potenza);
                         }
                     }
                     tentativiRiga++;
+
+                } while ((sommaInterazioni(elemI) != 0 || tutteNulle(elemI)) && tentativiRiga < CostantiString.MAX_TENTATIVI);
+
                 } while ((sommaInterazioni(elemI) != 0 || intNullaElemDiversi(elemI)) && tentativiRiga < Costanti.MAX_TENTATIVI);
 
-                if (tentativiRiga >= Costanti.MAX_TENTATIVI) {
+
+                if (tentativiRiga >= CostantiString.MAX_TENTATIVI) {
                     tutteRigheOk = false;
                     break;
                 }
@@ -154,94 +163,94 @@ public class Equilibrio {
     @Override
     public String toString() {
         StringBuilder tabella = new StringBuilder();
-        String lineaSeparatrice = Costanti.LINEA_ORIZZONTALE.repeat(Costanti.LARGHEZZA_COLONNA);
-        String lineaOrizzontale = Costanti.LINEA_ORIZZONTALE.repeat(Costanti.LARGHEZZA_COLONNA);
-        final String lineaLegenda = Costanti.LINEA_VERTICALE.repeat(11);
+        String lineaSeparatrice = CostantiString.LINEA_ORIZZONTALE.repeat(CostantiString.LARGHEZZA_COLONNA);
+        String lineaOrizzontale = CostantiString.LINEA_ORIZZONTALE.repeat(CostantiString.LARGHEZZA_COLONNA);
+        final String lineaLegenda = CostantiString.LINEA_VERTICALE.repeat(11);
 
         String[][] legendaItems = {
-            {AnsiColors.YELLOW.toString(), Costanti.TESTO_ATTACCO_DEBOLE},
-            {AnsiColors.RED.toString(), Costanti.TESTO_ATTACCO_FORTE},
-            {AnsiColors.CYAN.toString(), Costanti.TESTO_DIFESA_DEBOLE},
-            {AnsiColors.BLUE.toString(), Costanti.TESTO_DIFESA_FORTE}
+            {AnsiColors.YELLOW.toString(), CostantiString.TESTO_ATTACCO_DEBOLE},
+            {AnsiColors.RED.toString(), CostantiString.TESTO_ATTACCO_FORTE},
+            {AnsiColors.CYAN.toString(), CostantiString.TESTO_DIFESA_DEBOLE},
+            {AnsiColors.BLUE.toString(), CostantiString.TESTO_DIFESA_FORTE}
         };
 
-        tabella.append(Costanti.ANGOLO_SUPERIORE_SINISTRO_LEGENDA).append(lineaLegenda)
-              .append(Costanti.TITOLO_LEGENDA)
+        tabella.append(CostantiString.ANGOLO_SUPERIORE_SINISTRO_LEGENDA).append(lineaLegenda)
+              .append(CostantiString.TITOLO_LEGENDA)
               .append(lineaLegenda)
-              .append(Costanti.ANGOLO_SUPERIORE_DESTRO_LEGENDA)
+              .append(CostantiString.ANGOLO_SUPERIORE_DESTRO_LEGENDA)
               .append("\n");
 
         for (String[] item : legendaItems) {
-            tabella.append(Costanti.BORDO_VERTICALE_LEGENDA).append(" ")
+            tabella.append(CostantiString.BORDO_VERTICALE_LEGENDA).append(" ")
                   .append(item[0])
-                  .append(centra((int)(Costanti.LARGHEZZA_COLONNA * 2.5), item[1]))
+                  .append(centra((int)(CostantiString.LARGHEZZA_COLONNA * 2.5), item[1]))
                   .append(AnsiColors.RESET)
-                  .append(Costanti.BORDO_VERTICALE_LEGENDA)
+                  .append(CostantiString.BORDO_VERTICALE_LEGENDA)
                   .append("\n");
         }
 
-        tabella.append(Costanti.ANGOLO_INFERIORE_SINISTRO_LEGENDA)
-              .append(Costanti.LINEA_VERTICALE.repeat(31))
-              .append(Costanti.ANGOLO_INFERIORE_DESTRO_LEGENDA)
+        tabella.append(CostantiString.ANGOLO_INFERIORE_SINISTRO_LEGENDA)
+              .append(CostantiString.LINEA_VERTICALE.repeat(31))
+              .append(CostantiString.ANGOLO_INFERIORE_DESTRO_LEGENDA)
               .append("\n\n")
-              .append(Costanti.INTESTAZIONE_INTERPRETAZIONE).append("\n")
-              .append(Costanti.RIGA_ELEMENTI_ATTACCANTI).append("\n")
-              .append(Costanti.COLONNA_ELEMENTI_DIFESA).append("\n\n");
+              .append(CostantiString.INTESTAZIONE_INTERPRETAZIONE).append("\n")
+              .append(CostantiString.RIGA_ELEMENTI_ATTACCANTI).append("\n")
+              .append(CostantiString.COLONNA_ELEMENTI_DIFESA).append("\n\n");
 
-        tabella.append(Costanti.ANGOLO_SUPERIORE_SINISTRO_TABELLA).append(lineaSeparatrice);
+        tabella.append(CostantiString.ANGOLO_SUPERIORE_SINISTRO_TABELLA).append(lineaSeparatrice);
         for (int k = 0; k < elementi.size(); k++) {
-            tabella.append(Costanti.INCROCIO_SUPERIORE).append(lineaOrizzontale);
+            tabella.append(CostantiString.INCROCIO_SUPERIORE).append(lineaOrizzontale);
         }
-        tabella.append(Costanti.ANGOLO_SUPERIORE_DESTRO_TABELLA).append("\n");
+        tabella.append(CostantiString.ANGOLO_SUPERIORE_DESTRO_TABELLA).append("\n");
 
-        tabella.append(Costanti.BORDO_VERTICALE_TABELLA)
+        tabella.append(CostantiString.BORDO_VERTICALE_TABELLA)
               .append(" ".repeat(4))
-              .append(Costanti.FRECCIA_GIU)
-              .append(Costanti.DIF)
+              .append(CostantiString.FRECCIA_GIU)
+              .append(CostantiString.DIF)
               .append(" ".repeat(4));
         for (String elemento : elementi) {
-            tabella.append(Costanti.BORDO_VERTICALE_TABELLA)
-                  .append(centra(Costanti.LARGHEZZA_COLONNA, elemento));
+            tabella.append(CostantiString.BORDO_VERTICALE_TABELLA)
+                  .append(centra(CostantiString.LARGHEZZA_COLONNA, elemento));
         }
-        tabella.append(Costanti.BORDO_VERTICALE_TABELLA).append("\n");
+        tabella.append(CostantiString.BORDO_VERTICALE_TABELLA).append("\n");
 
-        tabella.append(Costanti.INCROCIO_SINISTRO).append(lineaSeparatrice);
+        tabella.append(CostantiString.INCROCIO_SINISTRO).append(lineaSeparatrice);
         for (int k = 0; k < elementi.size(); k++) {
-            tabella.append(Costanti.INCROCIO_CENTRALE).append(lineaOrizzontale);
+            tabella.append(CostantiString.INCROCIO_CENTRALE).append(lineaOrizzontale);
         }
-        tabella.append(Costanti.INCROCIO_DESTRO).append("\n");
+        tabella.append(CostantiString.INCROCIO_DESTRO).append("\n");
 
         for (int i = 0; i < elementi.size(); i++) {
             String attaccante = elementi.get(i);
-            tabella.append(Costanti.BORDO_VERTICALE_TABELLA)
-                  .append(Costanti.ATT)
-                  .append(Costanti.FRECCIA_DESTRA)
-                  .append(centra(Costanti.LARGHEZZA_COLONNA - 4, attaccante));
+            tabella.append(CostantiString.BORDO_VERTICALE_TABELLA)
+                  .append(CostantiString.ATT)
+                  .append(CostantiString.FRECCIA_DESTRA)
+                  .append(centra(CostantiString.LARGHEZZA_COLONNA - 4, attaccante));
 
             for (int j = 0; j < elementi.size(); j++) {
                 String difensore = elementi.get(j);
                 int valore = attaccante.equals(difensore) ? 0 :
                              equilibrioMap.get(attaccante).getOrDefault(difensore, 0);
-                tabella.append(Costanti.BORDO_VERTICALE_TABELLA)
+                tabella.append(CostantiString.BORDO_VERTICALE_TABELLA)
                       .append(formattaNumero(valore))
                       .append(" ".repeat(6));
             }
-            tabella.append(Costanti.BORDO_VERTICALE_TABELLA).append("\n");
+            tabella.append(CostantiString.BORDO_VERTICALE_TABELLA).append("\n");
 
             if (i < elementi.size() - 1) {
-                tabella.append(Costanti.INCROCIO_SINISTRO).append(lineaSeparatrice);
+                tabella.append(CostantiString.INCROCIO_SINISTRO).append(lineaSeparatrice);
                 for (int k = 0; k < elementi.size(); k++) {
-                    tabella.append(Costanti.INCROCIO_CENTRALE).append(lineaOrizzontale);
+                    tabella.append(CostantiString.INCROCIO_CENTRALE).append(lineaOrizzontale);
                 }
-                tabella.append(Costanti.INCROCIO_DESTRO).append("\n");
+                tabella.append(CostantiString.INCROCIO_DESTRO).append("\n");
             }
         }
 
-        tabella.append(Costanti.ANGOLO_INFERIORE_SINISTRO_TABELLA).append(lineaSeparatrice);
+        tabella.append(CostantiString.ANGOLO_INFERIORE_SINISTRO_TABELLA).append(lineaSeparatrice);
         for (int k = 0; k < elementi.size(); k++) {
-            tabella.append(Costanti.INCROCIO_INFERIORE).append(lineaOrizzontale);
+            tabella.append(CostantiString.INCROCIO_INFERIORE).append(lineaOrizzontale);
         }
-        tabella.append(Costanti.ANGOLO_INFERIORE_DESTRO_TABELLA)
+        tabella.append(CostantiString.ANGOLO_INFERIORE_DESTRO_TABELLA)
               .append("\n\n");
 
         return tabella.toString();
@@ -253,19 +262,19 @@ public class Equilibrio {
         String simbolo;
         
         if (numero == 0) {
-            formato = Costanti.FORMATO_NUMERO_ZERO;
+            formato = CostantiString.FORMATO_NUMERO_ZERO;
             risultato = String.format(formato, numero);
         } else {
-            formato = Costanti.FORMATO_NUMERO_NON_ZERO;
-            simbolo = numero > 0 ? Costanti.SIMBOLO_ATTACCO : Costanti.SIMBOLO_DIFESA;
+            formato = CostantiString.FORMATO_NUMERO_NON_ZERO;
+            simbolo = numero > 0 ? CostantiString.SIMBOLO_ATTACCO : CostantiString.SIMBOLO_DIFESA;
             if (numero < 0) {
-                if (numero >= -Costanti.SOGLIA_DEBOLE) {
+                if (numero >= -CostantiString.SOGLIA_DEBOLE) {
                     risultato = AnsiColors.CYAN + simbolo + String.format(formato, numero) + AnsiColors.RESET;
                 } else {
                     risultato = AnsiColors.BLUE + simbolo + String.format(formato, numero) + AnsiColors.RESET;
                 }
             } else {
-                if (numero <= Costanti.SOGLIA_DEBOLE) {
+                if (numero <= CostantiString.SOGLIA_DEBOLE) {
                     risultato = AnsiColors.YELLOW + simbolo + String.format(formato, numero) + AnsiColors.RESET;
                 } else {
                     risultato = AnsiColors.RED + simbolo + String.format(formato, numero) + AnsiColors.RESET;
