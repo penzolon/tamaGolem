@@ -2,6 +2,7 @@ package it.unibs.fp.tamaGolem;
 
 import it.unibs.fp.myutil.inputOutput.AnsiColors;
 import it.unibs.fp.myutil.inputOutput.RandomDraws;
+import it.unibs.fp.tamaGolem.Costanti.CostantiPartita;
 import it.unibs.fp.tamaGolem.Costanti.CostantiString;
 
 import java.util.HashMap;
@@ -60,80 +61,45 @@ public class Equilibrio {
     }
 
     private void generaEquilibrio() {
+        int tentativi;
         boolean equilibrato = false;
-        int tentativiGlobali = 0;
+        int intEstratto;
 
         while (!equilibrato) {
-            tentativiGlobali++;
-            if (tentativiGlobali > CostantiString.MAX_TENTATIVI) {
-                throw new IllegalStateException("Impossibile generare un equilibrio stabile dopo " + CostantiString.MAX_TENTATIVI + " tentativi globali.");
-            }
-
-           /**
-            * Pulisce la mappa equilibrioMap, che è una mappa principale dove ogni elemento è
-            * associato a un'altra mappa (contenente le sue interazioni con gli altri elementi).
-            * Questo passaggio è essenziale per resettare le informazioni delle interazioni precedenti
-            * prima di iniziare una nuova generazione di equilibrio.
-            * Inizializza una nuova mappa vuota per ogni elemento in `elementi`.
-            * Ogni elemento avrà una mappa associata che conterrà le interazioni con gli altri elementi.
-            */
-            
-            equilibrioMap.clear();
-            for (String el : elementi) {
-                equilibrioMap.put(el, new HashMap<>());
-            }
-            
-            /**
-             * Viene dichiarata una variabile booleana tutteRigheOk e inizializzata a true.
-			 * Questo serve per monitorare se tutte le righe di interazioni sono state generate correttamente.
-			 * Se una riga non viene generata correttamente, la variabile verrà impostata su false e il ciclo
-			 * principale (quello che genera tutte le interazioni) si interromperà.
-			 * Inizia un ciclo for che itera su ogni elemento nella lista elementi.
-			 * Per ogni elemento (elemI), il metodo cercherà di generare le sue interazioni con gli altri elementi.
-			 * Per ogni elemI, viene recuperata la sua mappa di interazioni dalla equilibrioMap.
-			 * La mappa associata a elemI conterrà i valori delle interazioni tra elemI e gli altri elementi.
-             */
-
-            boolean tutteRigheOk = true;
-            for (String elemI : elementi) {
-                Map<String, Integer> mappaI = equilibrioMap.get(elemI);
-                int tentativiRiga = 0;
-
-                /**
-                 * Viene pulita la mappa di interazioni di elemI (l'elemento corrente).
-				 * Questo è importante per assicurarsi che ogni volta che il ciclo tenta di generare 
-				 * nuove interazioni, non ci siano dati residui da tentativi precedenti.
-				 * Un ciclo che itera su tutti gli elementi nella lista elementi per generare le interazioni tra elemI.
-				 * Evita che un elemento venga interagito con sé stesso. Le interazioni sono solo tra elementi differenti.
-				 * Se la potenza risultante è 0, viene forzata a 1. Questo evita che l'interazione sia neutra (0)
-				 * e garantisce che ci sia sempre un'influenza, sia positiva che negativa.
-				 * assegna la potenza opposta (-potenza) per l'interazione inversa, tra elemJ e elemI.
-				 * Questo garantisce che se elemI interagisce positivamente con elemJ, elemJ interagirà negativamente con elemI
-                 */
-                do {
-                    mappaI.clear();
-                    for (String elemJ : elementi) {
-                        if (!elemI.equals(elemJ)) {
-                            int potenza = RandomDraws.drawInteger(CostantiString.MASSIMO_POTENZA, CostantiString.MASSIMO_POTENZA);
-                            if (potenza == 0) potenza = 1;
-                            equilibrioMap.get(elemI).put(elemJ, potenza);
-                            equilibrioMap.get(elemJ).put(elemI, -potenza);
-                        }
-                    }
-                    tentativiRiga++;
-
-                } while ((sommaInterazioni(elemI) != 0 || tutteNulle(elemI)) && tentativiRiga < CostantiString.MAX_TENTATIVI);
-
-                } while ((sommaInterazioni(elemI) != 0 || intNullaElemDiversi(elemI)) && tentativiRiga < Costanti.MAX_TENTATIVI);
-
-
-                if (tentativiRiga >= CostantiString.MAX_TENTATIVI) {
-                    tutteRigheOk = false;
-                    break;
+            // Inizializza la mappa con mappe vuote per ogni elemento
+            for (String elemento : elementi) {
+                equilibrioMap.put(elemento, new HashMap<>());
+                // Inizializza tutte le interazioni a 0
+                for (String altroElemento : elementi) {
+                    equilibrioMap.get(elemento).put(altroElemento, 0);
                 }
             }
 
-            equilibrato = tutteRigheOk;
+            for (int i = 0; i < elementi.size(); i++) {
+                String elementoI = elementi.get(i);
+                for (tentativi = 0; tentativi < CostantiString.MAX_TENTATIVI &&
+                        (sommaInterazioni(elementoI) != 0 || intNullaElemDiversi(elementoI)); tentativi++) {
+
+                    for (int j = i + 1; j < elementi.size(); j++) {
+                        String elementoJ = elementi.get(j);
+                        intEstratto = RandomDraws.drawInteger(1, CostantiString.MASSIMO_POTENZA);
+
+                        // Assegna un valore casuale positivo o negativo
+                        int valore = RandomDraws.drawBoolean() ? intEstratto : -intEstratto;
+
+                        // Imposta i valori simmetrici nella mappa
+                        equilibrioMap.get(elementoI).put(elementoJ, valore);
+                        equilibrioMap.get(elementoJ).put(elementoI, -valore);
+                    }
+                }
+
+                if (tentativi == CostantiString.MAX_TENTATIVI) {
+                    equilibrato = false;
+                    break;
+                } else {
+                    equilibrato = true;
+                }
+            }
         }
     }
 
