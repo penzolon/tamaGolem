@@ -77,7 +77,7 @@ public class Equilibrio {
             for (String el : elementi) {
                 equilibrioMap.put(el, new HashMap<>());
             }
-
+            
             /**
              * Viene dichiarata una variabile booleana tutteRigheOk e inizializzata a true.
 			 * Questo serve per monitorare se tutte le righe di interazioni sono state generate correttamente.
