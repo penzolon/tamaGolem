@@ -36,6 +36,7 @@ public class InterfacciaUtente {
 
     private static int getFile(JsonReader jsonReader) {
         int numFile;
+        System.out.println("Scelta set di elementi:");
         numFile = InputData.readIntegerBetween("Inserisci il numero del file da usare:\n\n"+ jsonReader.toString(), 1, jsonReader.getSize()) ;
         return numFile;
     }

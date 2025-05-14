@@ -36,6 +36,10 @@ public class Equilibrio {
         return elementi;
     }
 
+    public Map<String, Map<String, Integer>> getEquilibrioMap() {
+        return equilibrioMap;
+    }
+
     /**
      * Estrae un numero specificato di elementi unici da `allElementi` e li aggiunge alla lista `elementi`.
      * 
@@ -125,6 +129,31 @@ public class Equilibrio {
 
         return zeri;
     }
+
+    /**
+     * Calcola l'interazione tra due elementi specificati.
+     *
+     * @param elemento1 il primo elemento.
+     * @param elemento2 il secondo elemento.
+     * @return il valore dell'interazione tra i due elementi.
+     * @throws IllegalArgumentException se uno degli elementi non è presente o l'interazione non è definita.
+     */
+    public int calcolaInterazione(String elemento1, String elemento2) {
+        if (!equilibrioMap.containsKey(elemento1)) {
+            throw new IllegalArgumentException("Elemento non trovato: " + elemento1);
+        }
+        if (!equilibrioMap.containsKey(elemento2)) {
+            throw new IllegalArgumentException("Elemento non trovato: " + elemento2);
+        }
+
+        Integer interazione = equilibrioMap.get(elemento1).get(elemento2);
+        if (interazione == null) {
+            throw new IllegalArgumentException("Interazione non definita tra " + elemento1 + " e " + elemento2);
+        }
+
+        return interazione;
+    }
+
 
     @Override
     public String toString() {

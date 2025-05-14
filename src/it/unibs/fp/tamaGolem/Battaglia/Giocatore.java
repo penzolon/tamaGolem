@@ -8,48 +8,104 @@ import it.unibs.fp.tamaGolem.Equilibrio;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 
+/**
+ * Classe che rappresenta un giocatore nel contesto della battaglia dei TamaGolem.
+ * Ogni giocatore ha un ID, una lista di TamaGolem, una lista di pietre e altre proprietà
+ * utili per gestire il gioco.
+ */
 public class Giocatore {
     int idGiocatore;
     ArrayList<TamaGolem> listaGolem;
-    ArrayList<PietreElementi> listaPietre;
     int numTamaGolemEliminati;
     ArrayList<Elementi> listaElementi;
 
+    /**
+     * Costruttore della classe Giocatore.
+     *
+     * @param idGiocatore l'ID univoco del giocatore.
+     */
     public Giocatore(int idGiocatore) {
         this.idGiocatore = idGiocatore;
         this.listaGolem = new ArrayList<>();
-        this.listaPietre = new ArrayList<>();
         this.numTamaGolemEliminati = 0;
     }
 
+    /**
+     * Restituisce l'ID del giocatore.
+     *
+     * @return l'ID del giocatore.
+     */
     public int getIdGiocatore() {
         return idGiocatore;
     }
 
-    public ArrayList<PietreElementi> getListaPietre() {
-        return listaPietre;
-    }
 
+
+    /**
+     * Restituisce la lista dei TamaGolem posseduti dal giocatore.
+     *
+     * @return una lista di oggetti TamaGolem.
+     */
     public ArrayList<TamaGolem> getListaGolem() {
         return listaGolem;
     }
 
-    public void invocazioneTamaGolem(int numTamaGolem, int numPietre, Equilibrio equilibrio, ScortaPietre scortaPietre) {
-        // Implementa la logica per l'invocazione di un TamaGolem
+    /**
+     * Gestisce l'invocazione di un TamaGolem da parte del giocatore.
+     *
+     * @param numTamaGolem il numero massimo di TamaGolem che il giocatore può invocare.
+     * @param numPietre il numero di pietre da assegnare al TamaGolem.
+     * @param equilibrio l'oggetto Equilibrio che rappresenta le interazioni tra gli elementi.
+     * @param scortaPietre la scorta comune di pietre disponibile.
+     */
+    public TamaGolem invocazioneTamaGolem(int numTamaGolem, int numPietre, Equilibrio equilibrio, ScortaPietre scortaPietre, int numTamaEliminati) {
+        TamaGolem nuovoGolem =  null;
+        numTamaGolemEliminati = numTamaEliminati;
         if (numTamaGolemEliminati < numTamaGolem) {
-            TamaGolem nuovoGolem = new TamaGolem(CostantiPartita.VITA_TAMAGOLEM);
+            nuovoGolem = new TamaGolem(CostantiPartita.VITA_TAMAGOLEM);
             Deque<PietreElementi> listaPietre = selezionaPietre(numPietre, equilibrio, scortaPietre, nuovoGolem);
-            System.out.println(listaPietre.toString());
+            StringBuilder s = new StringBuilder();
+            s.append("[ ");
+            for (PietreElementi elementi : listaPietre) {
+                s.append(elementi.getNome());
+                s.append(", ");
+            }
+            if (!listaPietre.isEmpty()) {
+                s.setLength(s.length() - 2); // Rimuove l'ultima virgola e lo spazio
+            }
+            s.append(" ]\n");
+            System.out.println(s);
         } else {
             System.out.println("Hai già invocato il numero massimo di TamaGolem.");
-            // Aggiungi logica per gestire il caso in cui il numero massimo di TamaGolem è stato raggiunto
+            System.out.println("Non puoi invocare un altro TamaGolem.");
         }
+        if (nuovoGolem == null) {
+            return null;
+        }
+        return nuovoGolem;
     }
 
+    /**
+     * Permette al giocatore di selezionare un certo numero di pietre dalla scorta comune.
+     *
+     * @param numPietre il numero di pietre da selezionare.
+     * @param equilibrio l'oggetto Equilibrio che rappresenta gli elementi disponibili.
+     * @param scortaPietre la scorta comune di pietre disponibile.
+     * @param tamaGolem il TamaGolem a cui assegnare le pietre selezionate.
+     * @return una deque contenente le pietre selezionate.
+     */
     public Deque<PietreElementi> selezionaPietre(int numPietre, Equilibrio equilibrio, ScortaPietre scortaPietre, TamaGolem tamaGolem) {
         List<String> listaElementi = equilibrio.getElementi();
         Deque<PietreElementi> listaPietre = tamaGolem.getListaPietre();
+        if (idGiocatore == 1){
+            System.out.println("Turno del Giocatore 1.");
+        }else if (idGiocatore == 2){
+            System.out.println("Turno del Giocatore 2.");
+        }
+
+        System.out.println("Scegli le pietre da dare in pasto al tuo tamaGolem: ");
         System.out.println("\nPietre disponibili:");
         for (int i = 0; i < listaElementi.size(); i++) {
             String elemento = listaElementi.get(i);
@@ -73,9 +129,9 @@ public class Giocatore {
                     System.out.println("Pietra non disponibile, seleziona un'altra pietra.");
                 } else {
                     System.out.println("Pietra selezionata: " + nomeElemento);
-                    listaPietre.add(new PietreElementi(nomeElemento));
+                    listaPietre.addLast(new PietreElementi(nomeElemento));
                 }
-            } while (!trovato); // Continua finché la pietra non è disponibile
+            } while (!trovato);
         }
 
         return listaPietre;
