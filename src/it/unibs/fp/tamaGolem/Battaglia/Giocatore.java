@@ -65,7 +65,7 @@ public class Giocatore {
         numTamaGolemEliminati = numTamaEliminati;
         if (numTamaGolemEliminati < numTamaGolem) {
             nuovoGolem = new TamaGolem(CostantiPartita.VITA_TAMAGOLEM);
-            Deque<PietreElementi> listaPietre = selezionaPietre(numPietre, equilibrio, scortaPietre, nuovoGolem);
+            Deque<PietreElementi> listaPietre = selezionaPietre(numPietre, numTamaGolem, equilibrio, scortaPietre, nuovoGolem);
             StringBuilder s = new StringBuilder();
             s.append("[ ");
             for (PietreElementi elementi : listaPietre) {
@@ -81,9 +81,6 @@ public class Giocatore {
             System.out.println("Hai già invocato il numero massimo di TamaGolem.");
             System.out.println("Non puoi invocare un altro TamaGolem.");
         }
-        if (nuovoGolem == null) {
-            return null;
-        }
         return nuovoGolem;
     }
 
@@ -96,13 +93,15 @@ public class Giocatore {
      * @param tamaGolem il TamaGolem a cui assegnare le pietre selezionate.
      * @return una deque contenente le pietre selezionate.
      */
-    public Deque<PietreElementi> selezionaPietre(int numPietre, Equilibrio equilibrio, ScortaPietre scortaPietre, TamaGolem tamaGolem) {
+    public Deque<PietreElementi> selezionaPietre(int numPietre, int numTamaGolem,Equilibrio equilibrio, ScortaPietre scortaPietre, TamaGolem tamaGolem) {
         List<String> listaElementi = equilibrio.getElementi();
         Deque<PietreElementi> listaPietre = tamaGolem.getListaPietre();
-        if (idGiocatore == 1){
-            System.out.println("Turno del Giocatore 1.");
-        }else if (idGiocatore == 2){
-            System.out.println("Turno del Giocatore 2.");
+        if (numTamaGolemEliminati != 0) {
+            System.out.printf("Giocatore %d: ", idGiocatore);
+            System.out.println("Invoca un altro tamaGolem.");
+            System.out.println("Tamagolem rimasti: " + (numTamaGolem - numTamaGolemEliminati));
+        } else {
+            System.out.printf("Turno del Giocatore %d\n", idGiocatore);
         }
 
         System.out.println("Scegli le pietre da dare in pasto al tuo tamaGolem: ");

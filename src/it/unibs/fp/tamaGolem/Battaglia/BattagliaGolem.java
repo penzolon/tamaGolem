@@ -97,8 +97,6 @@ import java.util.Map;
             ArrayList<Giocatore> giocatori = new ArrayList<>();
             JsonReader jsonReader = new JsonReader(CostantiString.ELEMENTI_PATH);
             do {
-                Giocatore giocatore1 = new Giocatore(ID_GIOCATORE_1);
-                Giocatore giocatore2 = new Giocatore(ID_GIOCATORE_2);
                 numElementi = InterfacciaUtente.inserisciNumeroElementi(numElementi);
                 this.numeroElementi = numElementi;
                 numFile = InterfacciaUtente.scegliFileElementi(file, jsonReader, numFile);
@@ -107,63 +105,68 @@ import java.util.Map;
                 calcolaParametriDaInput();
                 ScortaPietre scorta = new ScortaPietre();
                 scorta.aggiungiPietre(numPietrePerElemento, equilibrio);
-                giocatori = invocaTamaGolem(giocatore1, giocatore2, scorta);
+                giocatori = invocaTamaGolem(scorta);
                 ArrayList<PietreElementi> pietreEstratte = new ArrayList<>();
-
-                while (giocatore1.getListaGolem().size() > 0 && giocatore2.getListaGolem().size() > 0) {
+                Giocatore giocatore1 = null;
+                Giocatore giocatore2 = null;
+                for (Giocatore g : giocatori) {
+                    if (g.getIdGiocatore() == ID_GIOCATORE_1) {
+                        giocatore1 = g;
+                    } else {
+                        giocatore2 = g;
+                    }
+                }
+                while (!giocatore1.getListaGolem().isEmpty() && !giocatore2.getListaGolem().isEmpty()) {
                     pietreEstratte.clear(); // Pulisce la lista delle pietre estratte per ogni iterazione
                     System.out.println("I Golem sono pronti a scagliare le pietre!");
                     InputData.readEmptyString("Premi enter per continuare...\n", false);
                     for (Giocatore giocatore : giocatori) {
-                        PietreElementi pietra = giocatore.getListaGolem().get(0).getListaPietre().poll();
+                        PietreElementi pietra = giocatore.getListaGolem().getFirst().getListaPietre().poll();
                         System.out.printf("Il golem del giocatore %d ha lanciato la pietra: %s\n", giocatore.getIdGiocatore(), pietra.getNome());
-                        giocatore.getListaGolem().get(0).getListaPietre().addLast(pietra);
+                        giocatore.getListaGolem().getFirst().getListaPietre().addLast(pietra);
                         pietreEstratte.add(pietra); // Aggiunge la pietra estratta alla lista
                     }
                     // Calcola l'interazione tra le pietre estratte
                     interazione = equilibrio.calcolaInterazione(pietreEstratte.get(0).getNome(), pietreEstratte.get(1).getNome());
-                    int numTamaGolemEliminatiPrimoG = 0;
-                    int numTamaGolemEliminatiSecondoG = 0;
                     if (interazione > 0) {
                         // Il TamaGolem del secondo giocatore subisce danni
-                        TamaGolem tamaGolemSecondoGiocatore = giocatori.getLast().getListaGolem().getFirst();
-                        int vitaTamaGolemSecondoGiocatore = tamaGolemSecondoGiocatore.getVita() - interazione;
-                        if (vitaTamaGolemSecondoGiocatore <= 0) {
-                            giocatori.getLast().getListaGolem().removeFirst(); // Rimuove il TamaGolem
-                            System.out.println("\nIl tamaGolem del giocatore 2 è stato eliminato!\n");
-                            InputData.readEmptyString("Premi enter per continuare...\n", false);
-                            numTamaGolemEliminatiSecondoG++;
-                            TamaGolem nuovoTamaGolem = giocatori.getLast().invocazioneTamaGolem(numTamaGolem, numPietre, equilibrio, scorta, numTamaGolemEliminatiSecondoG);
-                            giocatori.getLast().getListaGolem().add(nuovoTamaGolem);
-                        }
-                        tamaGolemSecondoGiocatore.setVita(vitaTamaGolemSecondoGiocatore);
-                        System.out.println("Il TamaGolem del giocatore 2 ha subito danni pari a: " + interazione);
-                        InputData.readEmptyString("Premi enter per continuare...\n", false);
+                        gestisciDanni(giocatori.getLast(), interazione, numTamaGolem, scorta, equilibrio);
                     } else {
-                        interazione = -interazione;
                         // Il TamaGolem del primo giocatore subisce danni
-                        TamaGolem tamaGolemPrimoGiocatore = giocatori.getFirst().getListaGolem().getFirst();
-                        int vitaTamaGolemPrimoGiocatore = tamaGolemPrimoGiocatore.getVita() - interazione;
-                        if (vitaTamaGolemPrimoGiocatore <= 0) {
-                            giocatori.getFirst().getListaGolem().removeFirst(); // Rimuove il TamaGolem
-                            System.out.println("\nIl tamaGolem del giocatore 1 è stato eliminato!\n");
-                            InputData.readEmptyString("Premi enter per continuare...\n", false);
-                            numTamaGolemEliminatiPrimoG++;
-                            TamaGolem nuovoTamaGolem = giocatori.getFirst().invocazioneTamaGolem(numTamaGolem, numPietre, equilibrio, scorta, numTamaGolemEliminatiPrimoG);
-                            giocatori.getFirst().getListaGolem().add(nuovoTamaGolem);
+                        interazione = -interazione;
+                        if (interazione == 0) {
+                            System.out.println("Nessun danno inflitto, i due tamaGolem hanno scagliato due pietre dello stesso elemento!");
+                        } else {
+                            gestisciDanni(giocatori.getFirst(), interazione, numTamaGolem, scorta, equilibrio);
                         }
-                        tamaGolemPrimoGiocatore.setVita(vitaTamaGolemPrimoGiocatore);
-                        if (interazione == 0){
-                            System.out.println("I due tamaGolem non hanno subito danni, poiché hanno lanciato due pietre dello stesso elemento.");
-                        }else {
-                            System.out.println("Il TamaGolem del giocatore 1 ha subito danni pari a: " + interazione);
-                        }
-                        InputData.readEmptyString("Premi enter per continuare...\n", false);
                     }
-                    System.out.println("Prova!");
+                }
+            } while (InputData.readYesOrNo("Vuoi giocare di nuovo?"));
+        }
+
+        private void gestisciDanni(Giocatore giocatore, int interazione, int numTamaGolem, ScortaPietre scorta, Equilibrio equilibrio) {
+            TamaGolem tamaGolem = giocatore.getListaGolem().getFirst();
+            int vitaTamaGolem = tamaGolem.getVita() - interazione;
+
+            if (vitaTamaGolem <= 0) {
+                giocatore.getListaGolem().removeFirst(); // Rimuove il TamaGolem
+                System.out.printf("Il TamaGolem del giocatore %d ha subito danni fatali!(%d)\n", giocatore.getIdGiocatore(), interazione);
+                System.out.printf("\nIl tamaGolem del giocatore %d è stato eliminato!\n", giocatore.getIdGiocatore());
+                InputData.readEmptyString("Premi enter per continuare...\n", false);
+                giocatore.numTamaGolemEliminati++;
+
+                if (giocatore.numTamaGolemEliminati >= numTamaGolem) {
+                    System.out.printf("Il giocatore %d non può più invocare TamaGolem e ha perso la partita!\n", giocatore.getIdGiocatore());
+                    return;
                 }
 
-            } while (InputData.readYesOrNo("Continuare"));
+                TamaGolem nuovoTamaGolem = giocatore.invocazioneTamaGolem(numTamaGolem, numPietre, equilibrio, scorta, giocatore.numTamaGolemEliminati);
+                giocatore.getListaGolem().add(nuovoTamaGolem);
+            } else {
+                tamaGolem.setVita(vitaTamaGolem);
+                System.out.printf("Il TamaGolem del giocatore %d ha subito danni pari a: %d\n", giocatore.getIdGiocatore(), interazione);
+                InputData.readEmptyString("\nPremi enter per continuare...\n", false);
+            }
         }
 
         /**
@@ -187,14 +190,13 @@ import java.util.Map;
          * Gestisce l'invocazione dei TamaGolem per entrambi i giocatori.
          * Determina quale giocatore inizia e invoca i TamaGolem in ordine.
          *
-         * @param giocatore1 il primo giocatore.
-         * @param giocatore2 il secondo giocatore.
          * @param scortaPietre la scorta comune di pietre disponibile per i TamaGolem.
          */
-        private ArrayList<Giocatore> invocaTamaGolem(Giocatore giocatore1, Giocatore giocatore2, ScortaPietre scortaPietre) {
+        private ArrayList<Giocatore> invocaTamaGolem(ScortaPietre scortaPietre) {
             boolean giocatore1Inizia = sceltaPrimoGiocatore();
             ArrayList<Giocatore> ordineGiocatori = new ArrayList<>();
-
+            Giocatore giocatore1 = new Giocatore(ID_GIOCATORE_1);
+            Giocatore giocatore2 = new Giocatore(ID_GIOCATORE_2);
             if (giocatore1Inizia) {
                 ordineGiocatori.add(giocatore1);
                 ordineGiocatori.add(giocatore2);
