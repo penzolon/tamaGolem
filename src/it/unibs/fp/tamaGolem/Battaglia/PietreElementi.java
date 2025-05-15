@@ -3,6 +3,7 @@ package it.unibs.fp.tamaGolem.Battaglia;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * Classe che rappresenta un elemento di tipo Pietra, utilizzato nel contesto della battaglia dei TamaGolem.
@@ -26,6 +27,20 @@ public class PietreElementi {
      * @return il nome dell'elemento.
      */
     public String getNome() {
-        return nome;
+        return nome.trim();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        PietreElementi other = (PietreElementi) obj;
+        return nome.equals(other.nome); // o confronta i campi rilevanti
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nome); // o gli stessi campi usati in equals
+    }
+
 }

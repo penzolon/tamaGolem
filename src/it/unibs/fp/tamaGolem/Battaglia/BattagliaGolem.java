@@ -9,6 +9,7 @@ import it.unibs.fp.tamaGolem.JsonReader;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Map;
 
 /**
@@ -89,61 +90,142 @@ import java.util.Map;
          * Gestisce l'inizializzazione dei giocatori, la scelta degli elementi e il flusso della partita.
          */
         public void eseguiPartita() {
-            int numElementi = 0;
-            int numFile = 1;
-            File file = null;
-            boolean trovato = false;
-            int interazione = 0;
-            ArrayList<Giocatore> giocatori = new ArrayList<>();
-            JsonReader jsonReader = new JsonReader(CostantiString.ELEMENTI_PATH);
             do {
-                numElementi = InterfacciaUtente.inserisciNumeroElementi(numElementi);
-                this.numeroElementi = numElementi;
-                numFile = InterfacciaUtente.scegliFileElementi(file, jsonReader, numFile);
-                file = jsonReader.getFile(numFile - 1);
-                equilibrio = new Equilibrio(numElementi, file);
-                calcolaParametriDaInput();
-                ScortaPietre scorta = new ScortaPietre();
-                scorta.aggiungiPietre(numPietrePerElemento, equilibrio);
-                giocatori = invocaTamaGolem(scorta);
+                inizializzaPartita();
+                ScortaPietre scorta = preparaScortaPietre();
+                ArrayList<Giocatore> giocatori = invocaTamaGolem(scorta);
+                Giocatore giocatore1 = trovaGiocatore(giocatori, ID_GIOCATORE_1);
+                Giocatore giocatore2 = trovaGiocatore(giocatori, ID_GIOCATORE_2);
                 ArrayList<PietreElementi> pietreEstratte = new ArrayList<>();
-                Giocatore giocatore1 = null;
-                Giocatore giocatore2 = null;
-                for (Giocatore g : giocatori) {
-                    if (g.getIdGiocatore() == ID_GIOCATORE_1) {
-                        giocatore1 = g;
-                    } else {
-                        giocatore2 = g;
-                    }
+
+                while (partitaInCorso(giocatore1, giocatore2)) {
+                    eseguiTurno(giocatori, pietreEstratte, scorta);
                 }
-                while (!giocatore1.getListaGolem().isEmpty() && !giocatore2.getListaGolem().isEmpty()) {
-                    pietreEstratte.clear(); // Pulisce la lista delle pietre estratte per ogni iterazione
-                    System.out.println("I Golem sono pronti a scagliare le pietre!");
-                    InputData.readEmptyString("Premi enter per continuare...\n", false);
-                    for (Giocatore giocatore : giocatori) {
-                        PietreElementi pietra = giocatore.getListaGolem().getFirst().getListaPietre().poll();
-                        System.out.printf("Il golem del giocatore %d ha lanciato la pietra: %s\n", giocatore.getIdGiocatore(), pietra.getNome());
-                        giocatore.getListaGolem().getFirst().getListaPietre().addLast(pietra);
-                        pietreEstratte.add(pietra); // Aggiunge la pietra estratta alla lista
-                    }
-                    // Calcola l'interazione tra le pietre estratte
-                    interazione = equilibrio.calcolaInterazione(pietreEstratte.get(0).getNome(), pietreEstratte.get(1).getNome());
-                    if (interazione > 0) {
-                        // Il TamaGolem del secondo giocatore subisce danni
-                        gestisciDanni(giocatori.getLast(), interazione, numTamaGolem, scorta, equilibrio);
-                    } else {
-                        // Il TamaGolem del primo giocatore subisce danni
-                        interazione = -interazione;
-                        if (interazione == 0) {
-                            System.out.println("Nessun danno inflitto, i due tamaGolem hanno scagliato due pietre dello stesso elemento!");
-                        } else {
-                            gestisciDanni(giocatori.getFirst(), interazione, numTamaGolem, scorta, equilibrio);
-                        }
-                    }
-                }
-            } while (InputData.readYesOrNo("Vuoi giocare di nuovo?"));
+            } while (InputData.readYesOrNo("Vuoi giocare di nuovo"));
         }
 
+        /**
+         * Verifica se due queue di pietre sono identiche, ovvero se contengono
+         * gli stessi elementi nello stesso ordine.
+         *
+         * @param queue1 la prima queue di pietre.
+         * @param queue2 la seconda queue di pietre.
+         * @return true se le due queue sono identiche, false altrimenti.
+         */
+        private boolean sonoQueueIdentiche(Deque<PietreElementi> queue1, Deque<PietreElementi> queue2) {
+            if (queue1.size() != queue2.size()) {
+                return false;
+            }
+            return queue1.equals(queue2);
+        }
+
+        /**
+         * Inizializza i parametri della partita, come il numero di elementi,
+         * il file degli elementi e l'equilibrio tra gli elementi.
+         */
+        private void inizializzaPartita() {
+            int numElementi = InterfacciaUtente.inserisciNumeroElementi(0);
+            this.numeroElementi = numElementi;
+            int numFile = InterfacciaUtente.scegliFileElementi(null, new JsonReader(CostantiString.ELEMENTI_PATH), 1);
+            File file = new JsonReader(CostantiString.ELEMENTI_PATH).getFile(numFile - 1);
+            equilibrio = new Equilibrio(numElementi, file);
+            calcolaParametriDaInput();
+            System.out.println(equilibrio.toString());
+        }
+
+        /**
+         * Prepara la scorta comune di pietre per la partita,
+         * aggiungendo le pietre necessarie in base agli elementi.
+         *
+         * @return la scorta di pietre preparata.
+         */
+        private ScortaPietre preparaScortaPietre() {
+            ScortaPietre scorta = new ScortaPietre();
+            scorta.aggiungiPietre(numPietrePerElemento, equilibrio);
+            return scorta;
+        }
+
+        /**
+         * Trova un giocatore nella lista di giocatori in base al suo ID.
+         *
+         * @param giocatori la lista di giocatori.
+         * @param idGiocatore l'ID del giocatore da trovare.
+         * @return il giocatore trovato, o null se non esiste.
+         */
+        private Giocatore trovaGiocatore(ArrayList<Giocatore> giocatori, int idGiocatore) {
+            for (Giocatore g : giocatori) {
+                if (g.getIdGiocatore() == idGiocatore) {
+                    return g;
+                }
+            }
+            return null;
+        }
+
+        /**
+         * Controlla se la partita è ancora in corso.
+         *
+         * @param giocatore1 il primo giocatore.
+         * @param giocatore2 il secondo giocatore.
+         * @return true se la partita è in corso, false altrimenti.
+         */
+        private boolean partitaInCorso(Giocatore giocatore1, Giocatore giocatore2) {
+            return giocatore1 != null && giocatore2 != null &&
+                   !giocatore1.getListaGolem().isEmpty() && !giocatore2.getListaGolem().isEmpty();
+        }
+
+        /**
+         * Esegue un turno di gioco, gestendo il lancio delle pietre e i danni inflitti.
+         *
+         * @param giocatori la lista dei giocatori.
+         * @param pietreEstratte la lista delle pietre estratte durante il turno.
+         * @param scorta la scorta comune di pietre.
+         */
+        private void eseguiTurno(ArrayList<Giocatore> giocatori, ArrayList<PietreElementi> pietreEstratte, ScortaPietre scorta) {
+            pietreEstratte.clear();
+            System.out.println("I Golem sono pronti a scagliare le pietre!");
+            InputData.readEmptyString("Premi enter per continuare...\n", false);
+
+            Deque<PietreElementi> queue1 = giocatori.getFirst().getListaGolem().getFirst().getListaPietre();
+            Deque<PietreElementi> queue2 = giocatori.getLast().getListaGolem().getFirst().getListaPietre();
+
+            boolean identiche = sonoQueueIdentiche(queue1, queue2);
+            while (identiche) {
+                Giocatore giocatoreDaReimmettere = queue1.size() > queue2.size() ? giocatori.getFirst() : giocatori.getLast();
+                System.out.printf("La liste delle pietre dei due TamaGolem sono identiche! Giocatore %d: Reinserisci le pietre:\n", giocatoreDaReimmettere.getIdGiocatore());
+                giocatoreDaReimmettere.getListaGolem().getFirst().getListaPietre().clear();
+                giocatoreDaReimmettere.selezionaPietre(numPietre, numTamaGolem, equilibrio, scorta, giocatoreDaReimmettere.getListaGolem().getFirst());
+            }
+
+            for (Giocatore giocatore : giocatori) {
+                PietreElementi pietra = giocatore.getListaGolem().getFirst().getListaPietre().poll();
+                assert pietra != null;
+                System.out.printf("Il golem del giocatore %d ha lanciato la pietra: %s\n", giocatore.getIdGiocatore(), pietra.getNome());
+                giocatore.getListaGolem().getFirst().getListaPietre().addLast(pietra);
+                pietreEstratte.add(pietra);
+            }
+
+            int interazione = equilibrio.calcolaInterazione(pietreEstratte.get(0).getNome(), pietreEstratte.get(1).getNome());
+            if (interazione > 0) {
+                gestisciDanni(giocatori.getLast(), interazione, numTamaGolem, scorta, equilibrio);
+            } else {
+                interazione = -interazione;
+                if (interazione == 0) {
+                    System.out.println("Nessun danno inflitto, i due tamaGolem hanno scagliato due pietre dello stesso elemento!");
+                } else {
+                    gestisciDanni(giocatori.getFirst(), interazione, numTamaGolem, scorta, equilibrio);
+                }
+            }
+        }
+
+        /**
+         * Gestisce i danni inflitti a un giocatore e al suo TamaGolem.
+         *
+         * @param giocatore il giocatore che subisce i danni.
+         * @param interazione il valore dell'interazione tra le pietre.
+         * @param numTamaGolem il numero totale di TamaGolem.
+         * @param scorta la scorta comune di pietre.
+         * @param equilibrio l'oggetto Equilibrio che rappresenta gli elementi disponibili.
+         */
         private void gestisciDanni(Giocatore giocatore, int interazione, int numTamaGolem, ScortaPietre scorta, Equilibrio equilibrio) {
             TamaGolem tamaGolem = giocatore.getListaGolem().getFirst();
             int vitaTamaGolem = tamaGolem.getVita() - interazione;
@@ -221,7 +303,7 @@ import java.util.Map;
          * @return true se il giocatore 1 inizia, false altrimenti.
          */
         private boolean sceltaPrimoGiocatore() {
-            boolean giocatore1Inizia = false;
+            boolean giocatore1Inizia;
             giocatore1Inizia = estrazionePrimoGiocatore();
             if (estrazionePrimoGiocatore()) {
                 System.out.println("\nÉ stato scelto il giocatore 1!");
@@ -248,7 +330,6 @@ import java.util.Map;
          *
          * @return true se il giocatore 1 inizia, false altrimenti.
          */
-
         public boolean estrazionePrimoGiocatore() {
             return RandomDraws.drawBoolean();
         }
