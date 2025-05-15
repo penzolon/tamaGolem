@@ -2,10 +2,11 @@ package it.unibs.fp.tamaGolem.Battaglia;
 
 import it.unibs.fp.myutil.inputOutput.InputData;
 import it.unibs.fp.myutil.inputOutput.RandomDraws;
+import it.unibs.fp.tamaGolem.Costanti.CostantiPartita;
 import it.unibs.fp.tamaGolem.Costanti.CostantiString;
-import it.unibs.fp.tamaGolem.Equilibrio;
+import it.unibs.fp.tamaGolem.Setup.Equilibrio;
 import it.unibs.fp.tamaGolem.InterfacciaUtente;
-import it.unibs.fp.tamaGolem.JsonReader;
+import it.unibs.fp.tamaGolem.Setup.JsonReader;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,8 +20,6 @@ import java.util.Map;
      * e gestisce il flusso della partita.
      */
     public class BattagliaGolem {
-        public static final int ID_GIOCATORE_2 = 2;
-        public static final int ID_GIOCATORE_1 = 1;
         int numeroElementi;
         int numTamaGolem;
         int numPietre;
@@ -95,20 +94,20 @@ import java.util.Map;
                 inizializzaPartita();
                 ScortaPietre scorta = preparaScortaPietre();
                 ArrayList<Giocatore> giocatori = invocaTamaGolem(scorta);
-                Giocatore giocatore1 = trovaGiocatore(giocatori, ID_GIOCATORE_1);
-                Giocatore giocatore2 = trovaGiocatore(giocatori, ID_GIOCATORE_2);
+                Giocatore giocatore1 = trovaGiocatore(giocatori, CostantiPartita.ID_GIOCATORE_1);
+                Giocatore giocatore2 = trovaGiocatore(giocatori, CostantiPartita.ID_GIOCATORE_2);
                 ArrayList<PietreElementi> pietreEstratte = new ArrayList<>();
 
                 while (partitaInCorso(giocatore1, giocatore2)) {
                     eseguiTurno(giocatori, pietreEstratte, scorta);
                 }
-                boolean mostraEquilibrio = InputData.readYesOrNo("Vuoi visualizzare l'equilibrio tra gli elementi");
+                boolean mostraEquilibrio = InputData.readYesOrNo(CostantiString.DOMANDA_VISUALIZZA_EQUILIBRIO);
                 System.out.println();
-                if (mostraEquilibrio){
-                    System.out.println("Equilibrio tra gli elementi: \n" + equilibrio.toString());
+                if (mostraEquilibrio) {
+                    System.out.println(CostantiString.MESSAGGIO_EQUILIBRIO + equilibrio.toString());
                 }
 
-            } while (InputData.readYesOrNo("Vuoi giocare di nuovo"));
+            } while (InputData.readYesOrNo(CostantiString.DOMANDA_GIOCARE_DI_NUOVO));
         }
 
         /**
@@ -193,14 +192,14 @@ import java.util.Map;
             Deque<PietreElementi> queue2 = giocatori.getLast().getListaGolem().getFirst().getListaPietre();
 
             boolean identiche = sonoQueueIdentichePerNome(queue1, queue2);
-            if (!identiche){
-                System.out.println("I Golem sono pronti a scagliare le pietre!");
-                InputData.readEmptyString("Premi enter per continuare...\n", false);
+            if (!identiche) {
+                System.out.println(CostantiString.MESSAGGIO_GOLEM_PRONTI);
+                InputData.readEmptyString(CostantiString.MESSAGGIO_PREMI_ENTER, false);
             }
             while (identiche) {
                 Giocatore giocatoreDaReimmettere = queue1.size() > queue2.size() ? giocatori.getFirst() : giocatori.getLast();
-                System.out.printf("La liste delle pietre dei due TamaGolem sono identiche! \nGiocatore %d: Reinserisci le pietre!\n\n", giocatoreDaReimmettere.getIdGiocatore());
-                InputData.readEmptyString("Premi enter per continuare...\n", false);
+                System.out.printf(CostantiString.MESSAGGIO_LISTE_IDENTICHE + "\n" + CostantiString.MESSAGGIO_REINSERISCI_PIETRE, giocatoreDaReimmettere.getIdGiocatore());
+                InputData.readEmptyString(CostantiString.MESSAGGIO_PREMI_ENTER, false);
                 Deque<PietreElementi> listaPietre = giocatoreDaReimmettere.getListaGolem().getFirst().getListaPietre();
                 for (PietreElementi pietra : listaPietre) {
                     scorta.aggiungiPietraAllaScorta(pietra.getNome());
@@ -211,15 +210,15 @@ import java.util.Map;
                 queue2 = giocatori.getLast().getListaGolem().getFirst().getListaPietre();
                 identiche = sonoQueueIdentichePerNome(queue1, queue2);
                 if (!identiche) {
-                    System.out.println("\nI Golem sono pronti a scagliare le pietre!");
-                    InputData.readEmptyString("Premi enter per continuare...\n", false);
+                    System.out.println("\n" + CostantiString.MESSAGGIO_GOLEM_PRONTI);
+                    InputData.readEmptyString(CostantiString.MESSAGGIO_PREMI_ENTER, false);
                 }
             }
 
             for (Giocatore giocatore : giocatori) {
                 PietreElementi pietra = giocatore.getListaGolem().getFirst().getListaPietre().poll();
                 assert pietra != null;
-                System.out.printf("Il golem del giocatore %d ha lanciato la pietra: %s\n", giocatore.getIdGiocatore(), pietra.getNome());
+                System.out.printf(CostantiString.MESSAGGIO_PIETRA_LANCIATA, giocatore.getIdGiocatore(), pietra.getNome());
                 giocatore.getListaGolem().getFirst().getListaPietre().addLast(pietra);
                 pietreEstratte.add(pietra);
             }
@@ -230,15 +229,23 @@ import java.util.Map;
             } else {
                 interazione = -interazione;
                 if (interazione == 0) {
-                    System.out.println("Nessun danno inflitto, i due tamaGolem hanno scagliato due pietre dello stesso elemento!\n");
-                    InputData.readEmptyString("Premi enter per continuare...\n", false);
+                    System.out.println(CostantiString.MESSAGGIO_NESSUN_DANNO);
+                    InputData.readEmptyString(CostantiString.MESSAGGIO_PREMI_ENTER, false);
                 } else {
                     gestisciDanni(giocatori.getFirst(), interazione, numTamaGolem, scorta, equilibrio);
                 }
             }
         }
 
-
+        /**
+         * Verifica se due code di pietre sono identiche confrontando i nomi degli elementi
+         * in esse contenuti, ignorando eventuali spazi iniziali o finali.
+         *
+         * @param q1 la prima coda di pietre.
+         * @param q2 la seconda coda di pietre.
+         * @return true se le due code contengono lo stesso numero di elementi con nomi identici
+         *         nello stesso ordine, false altrimenti.
+         */
         private boolean sonoQueueIdentichePerNome(Deque<PietreElementi> q1, Deque<PietreElementi> q2) {
             if (q1.size() != q2.size()) return false;
 
@@ -255,7 +262,7 @@ import java.util.Map;
         }
 
 
-    /**
+        /**
          * Gestisce i danni inflitti a un giocatore e al suo TamaGolem.
          *
          * @param giocatore il giocatore che subisce i danni.
@@ -269,14 +276,14 @@ import java.util.Map;
             int vitaTamaGolem = tamaGolem.getVita() - interazione;
 
             if (vitaTamaGolem <= 0) {
-                giocatore.getListaGolem().removeFirst(); // Rimuove il TamaGolem
-                System.out.printf("Il TamaGolem del giocatore %d ha subito danni fatali!(%d)\n", giocatore.getIdGiocatore(), interazione);
-                System.out.printf("\nIl tamaGolem del giocatore %d è stato eliminato!\n", giocatore.getIdGiocatore());
-                InputData.readEmptyString("Premi enter per continuare...\n", false);
+                giocatore.getListaGolem().removeFirst();
+                System.out.printf(CostantiString.MESSAGGIO_DANNI_FATALI, giocatore.getIdGiocatore(), interazione);
+                System.out.printf(CostantiString.MESSAGGIO_ELIMINATO, giocatore.getIdGiocatore());
+                InputData.readEmptyString(CostantiString.MESSAGGIO_PREMI_ENTER, false);
                 giocatore.numTamaGolemEliminati++;
 
                 if (giocatore.numTamaGolemEliminati >= numTamaGolem) {
-                    System.out.printf("Il giocatore %d non può più invocare TamaGolem e ha perso la partita!\n", giocatore.getIdGiocatore());
+                    System.out.printf(CostantiString.MESSAGGIO_PARTITA_PERSA, giocatore.getIdGiocatore());
                     return;
                 }
 
@@ -284,8 +291,8 @@ import java.util.Map;
                 giocatore.getListaGolem().add(nuovoTamaGolem);
             } else {
                 tamaGolem.setVita(vitaTamaGolem);
-                System.out.printf("Il TamaGolem del giocatore %d ha subito danni pari a: %d\n", giocatore.getIdGiocatore(), interazione);
-                InputData.readEmptyString("\nPremi enter per continuare...\n", false);
+                System.out.printf(CostantiString.MESSAGGIO_DANNI_SUBITI, giocatore.getIdGiocatore(), interazione);
+                InputData.readEmptyString(CostantiString.MESSAGGIO_PREMI_ENTER, false);
             }
         }
 
@@ -298,11 +305,11 @@ import java.util.Map;
          * @return il valore dell'interazione tra i due elementi.
          * @throws IllegalArgumentException se l'interazione non è trovata.
          */
-        public int calcolaInterazione(String elemento1, String elemento2, Map<String, Map<String, Integer>> equilibrioMap) {
+        private int calcolaInterazione(String elemento1, String elemento2, Map<String, Map<String, Integer>> equilibrioMap) {
             if (equilibrioMap.containsKey(elemento1) && equilibrioMap.get(elemento1).containsKey(elemento2)) {
                 return equilibrioMap.get(elemento1).get(elemento2);
             } else {
-                throw new IllegalArgumentException("Interazione non trovata tra " + elemento1 + " e " + elemento2);
+                throw new IllegalArgumentException(String.format(CostantiString.ERRORE_INTERAZIONE_NON_TROVATA, elemento1, elemento2));
             }
         }
 
@@ -315,8 +322,8 @@ import java.util.Map;
         private ArrayList<Giocatore> invocaTamaGolem(ScortaPietre scortaPietre) {
             boolean giocatore1Inizia = sceltaPrimoGiocatore();
             ArrayList<Giocatore> ordineGiocatori = new ArrayList<>();
-            Giocatore giocatore1 = new Giocatore(ID_GIOCATORE_1);
-            Giocatore giocatore2 = new Giocatore(ID_GIOCATORE_2);
+            Giocatore giocatore1 = new Giocatore(CostantiPartita.ID_GIOCATORE_1);
+            Giocatore giocatore2 = new Giocatore(CostantiPartita.ID_GIOCATORE_2);
             if (giocatore1Inizia) {
                 ordineGiocatori.add(giocatore1);
                 ordineGiocatori.add(giocatore2);
@@ -341,12 +348,11 @@ import java.util.Map;
          * @return true se il giocatore 1 inizia, false altrimenti.
          */
         private boolean sceltaPrimoGiocatore() {
-            boolean giocatore1Inizia;
-            giocatore1Inizia = estrazionePrimoGiocatore();
-            if (estrazionePrimoGiocatore()) {
-                System.out.println("\nÉ stato scelto il giocatore 1!");
+            boolean giocatore1Inizia = estrazionePrimoGiocatore();
+            if (giocatore1Inizia) {
+                System.out.println(CostantiString.MESSAGGIO_GIOCATORE_1_SCELTO);
             } else {
-                System.out.println("\nÉ stato scelto il giocatore 2!");
+                System.out.println(CostantiString.MESSAGGIO_GIOCATORE_2_SCELTO);
             }
             return giocatore1Inizia;
         }

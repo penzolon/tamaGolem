@@ -1,7 +1,8 @@
 package it.unibs.fp.tamaGolem.Battaglia;
 
+import it.unibs.fp.tamaGolem.Costanti.CostantiString;
+
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * Classe che rappresenta un TamaGolem nel contesto della battaglia.
@@ -48,7 +49,7 @@ public class TamaGolem {
     public void lanciaPietre(){
         if (!(listaPietre.isEmpty())){
             PietreElementi pietra = listaPietre.poll();
-            System.out.println("Hai lanciato la pietra: " + pietra.getNome());
+            System.out.println(CostantiString.HAI_LANCIATO_LA_PIETRA + pietra.getNome());
         }
     }
 
