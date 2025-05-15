@@ -68,6 +68,33 @@ public class Equilibrio {
         return elementi;
     }
 
+    /**
+	 * Genera l'equilibrio tra gli elementi selezionati, creando una mappa che rappresenta
+	 * le interazioni tra ogni coppia di elementi. L'equilibrio è generato in modo casuale,
+	 * rispettando le seguenti condizioni:
+	 * <ul>
+	 *   <li>La somma delle interazioni per ogni elemento deve essere pari a zero.</li>
+	 *   <li>Ogni elemento deve avere almeno un'interazione non nulla con un altro elemento.</li>
+	 * </ul>
+	 *
+	 * <p>Il metodo esegue i seguenti passaggi:</p>
+	 * <ol>
+	 *   <li><b>Inizializzazione della mappa:</b> Per ogni elemento, crea una sotto-mappa
+	 *       con interazioni inizializzate a zero per tutti gli altri elementi.</li>
+	 *   <li><b>Generazione delle interazioni:</b> Per ogni elemento:
+	 *       <ul>
+	 *         <li>Genera valori casuali positivi o negativi per le interazioni con gli altri elementi.</li>
+	 *         <li>Imposta i valori simmetrici nella mappa per garantire la coerenza
+	 *             (ad esempio, se A infligge +3 a B, allora B infligge -3 ad A).</li>
+	 *         <li>Ripete il processo fino a soddisfare le condizioni di equilibrio.</li>
+	 *       </ul>
+	 *   </li>
+	 *   <li><b>Verifica dell'equilibrio:</b> Controlla che la somma delle interazioni per ogni elemento
+	 *       sia pari a zero e che ogni elemento abbia almeno un'interazione non nulla.</li>
+	 *   <li><b>Ripetizione in caso di errore:</b> Se le condizioni non sono soddisfatte dopo un numero massimo
+	 *       di tentativi, rigenera l'intera mappa.</li>
+	 * </ol>
+	 */
     private void generaEquilibrio() {
         int tentativi;
         boolean equilibrato = false;

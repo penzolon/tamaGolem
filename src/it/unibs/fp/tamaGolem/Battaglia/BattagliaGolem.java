@@ -37,9 +37,9 @@ import java.util.Iterator;
         }
 
         /**
-         * Esegue una partita di TamaGolem.
-         * Gestisce l'inizializzazione dei giocatori, la scelta degli elementi e il flusso della partita.
-         */
+		 * Inizializza i parametri della partita e gestisce il flusso del gioco.
+		 * Esegue i turni di gioco fino a quando uno dei giocatori non perde tutti i TamaGolem.
+		 */
         public void eseguiPartita() {
             do {
                 inizializzaPartita();
@@ -114,12 +114,37 @@ import java.util.Iterator;
         }
 
         /**
-         * Esegue un turno di gioco, gestendo il lancio delle pietre e i danni inflitti.
-         *
-         * @param giocatori la lista dei giocatori.
-         * @param pietreEstratte la lista delle pietre estratte durante il turno.
-         * @param scorta la scorta comune di pietre.
-         */
+		 * Esegue un singolo turno del gioco tra i due giocatori, gestendo il lancio delle pietre
+		 * e il calcolo dei danni.
+		 *
+		 * <p>Il metodo esegue i seguenti passaggi:</p>
+		 * <ol>
+		 *   <li><b>Preparazione:</b> Svuota la lista `pietreEstratte` per memorizzare le pietre lanciate durante questo turno.</li>
+		 *   <li><b>Validazione delle code:</b> Recupera le code di pietre (`queue1` e `queue2`) dei TamaGolem attivi
+		 *       per ciascun giocatore e verifica se sono identiche utilizzando il metodo `sonoQueueIdentichePerNome`.
+		 *       Se le code sono identiche, il giocatore con la coda più lunga deve restituire le pietre alla
+		 *       scorta comune e selezionare nuove pietre. Questo processo si ripete finché le code non differiscono.</li>
+		 *   <li><b>Lancio delle pietre:</b> Ogni giocatore lancia la prima pietra dalla propria coda. La pietra viene rimossa
+		 *       dalla testa della coda e reinserita in fondo, simulando una coda circolare. Le pietre lanciate
+		 *       vengono aggiunte alla lista `pietreEstratte`.</li>
+		 *   <li><b>Calcolo dell'interazione:</b> L'interazione tra le due pietre lanciate viene calcolata utilizzando
+		 *       il metodo `calcolaInterazione` dell'oggetto `Equilibrio`. Il risultato determina i danni da infliggere.</li>
+		 *   <li><b>Gestione dei danni:</b> In base al valore dell'interazione:
+		 *       <ul>
+		 *         <li>Se positivo, i danni vengono inflitti al secondo giocatore.</li>
+		 *         <li>Se negativo, il valore assoluto dei danni viene inflitto al primo giocatore.</li>
+		 *         <li>Se zero, non vengono inflitti danni e il turno termina.</li>
+		 *       </ul>
+		 *   </li>
+		 *   <li><b>Aggiornamento dello stato del gioco:</b> Se la vita di un TamaGolem scende a zero o meno, viene rimosso
+		 *       dalla lista del giocatore e sostituito con un nuovo TamaGolem, se disponibile. Se un giocatore esaurisce
+		 *       i suoi TamaGolem, la partita termina per quel giocatore.</li>
+		 * </ol>
+		 *
+		 * @param giocatori la lista dei giocatori che partecipano al gioco.
+		 * @param pietreEstratte la lista delle pietre lanciate durante il turno.
+		 * @param scorta la scorta comune di pietre disponibile per il gioco.
+		 */
         private void eseguiTurno(ArrayList<Giocatore> giocatori, ArrayList<PietreElementi> pietreEstratte, ScortaPietre scorta) {
             pietreEstratte.clear();
 
@@ -197,14 +222,33 @@ import java.util.Iterator;
         }
 
         /**
-         * Gestisce i danni inflitti a un giocatore e al suo TamaGolem.
-         *
-         * @param giocatore il giocatore che subisce i danni.
-         * @param interazione il valore dell'interazione tra le pietre.
-         * @param numTamaGolem il numero totale di TamaGolem.
-         * @param scorta la scorta comune di pietre.
-         * @param equilibrio l'oggetto Equilibrio che rappresenta gli elementi disponibili.
-         */
+		 * Gestisce i danni inflitti a un giocatore e al suo TamaGolem.
+		 * Se il TamaGolem subisce danni fatali, viene rimosso e sostituito con un nuovo TamaGolem,
+		 * se disponibile. Se il giocatore esaurisce i TamaGolem, la partita termina per quel giocatore.
+		 *
+		 * <p>Il metodo esegue i seguenti passaggi:</p>
+		 * <ol>
+		 *   <li><b>Calcolo della vita residua:</b> Riduce la vita del TamaGolem attivo del giocatore
+		 *       in base al valore dell'interazione.</li>
+		 *   <li><b>Gestione dei danni fatali:</b> Se la vita del TamaGolem scende a zero o meno:
+		 *       <ul>
+		 *         <li>Il TamaGolem viene rimosso dalla lista del giocatore.</li>
+		 *         <li>Viene incrementato il contatore dei TamaGolem eliminati per il giocatore.</li>
+		 *         <li>Se il giocatore ha esaurito i TamaGolem, la partita termina per quel giocatore.</li>
+		 *         <li>Altrimenti, viene invocato un nuovo TamaGolem e aggiunto alla lista del giocatore.</li>
+		 *       </ul>
+		 *   </li>
+		 *   <li><b>Gestione dei danni non fatali:</b> Se il TamaGolem sopravvive, la sua vita viene aggiornata
+		 *       e viene notificato il danno subito.</li>
+		 * </ol>
+		 *
+		 * @param giocatore il giocatore che subisce i danni.
+		 * @param interazione il valore dell'interazione tra le pietre.
+		 * @param numTamaGolem il numero totale di TamaGolem disponibili per il giocatore.
+		 * @param scorta la scorta comune di pietre.
+		 * @param equilibrio l'oggetto Equilibrio che rappresenta gli elementi disponibili.
+		 */
+
         private void gestisciDanni(Giocatore giocatore, int interazione, int numTamaGolem, ScortaPietre scorta, Equilibrio equilibrio) {
             TamaGolem tamaGolem = giocatore.getListaGolem().getFirst();
             int vitaTamaGolem = tamaGolem.getVita() - interazione;
@@ -231,11 +275,27 @@ import java.util.Iterator;
         }
 
         /**
-         * Gestisce l'invocazione dei TamaGolem per entrambi i giocatori.
-         * Determina quale giocatore inizia e invoca i TamaGolem in ordine.
-         *
-         * @param scortaPietre la scorta comune di pietre disponibile per i TamaGolem.
-         */
+		 * Gestisce l'invocazione dei TamaGolem per entrambi i giocatori.
+		 * Determina quale giocatore inizia e invoca i TamaGolem in ordine.
+		 *
+		 * <p>Il metodo esegue i seguenti passaggi:</p>
+		 * <ol>
+		 *   <li><b>Determinazione del primo giocatore:</b> Effettua un'estrazione casuale per decidere quale giocatore
+		 *       inizia per primo. Il risultato viene comunicato tramite un messaggio.</li>
+		 *   <li><b>Creazione dell'ordine dei giocatori:</b> In base al risultato dell'estrazione, i giocatori vengono
+		 *       ordinati in una lista che rappresenta l'ordine di gioco.</li>
+		 *   <li><b>Invocazione dei TamaGolem:</b> Per ciascun giocatore nell'ordine stabilito:
+		 *       <ul>
+		 *         <li>Viene creato un nuovo TamaGolem utilizzando i parametri della partita e la scorta comune di pietre.</li>
+		 *         <li>Il TamaGolem viene aggiunto alla lista dei Golem del giocatore.</li>
+		 *       </ul>
+		 *   </li>
+		 * </ol>
+		 *
+		 * @param scortaPietre la scorta comune di pietre disponibile per i TamaGolem.
+		 * @return una lista ordinata dei giocatori, con i loro TamaGolem invocati.
+		 */
+
         private ArrayList<Giocatore> invocaTamaGolem(ScortaPietre scortaPietre) {
             boolean giocatore1Inizia = sceltaPrimoGiocatore();
             ArrayList<Giocatore> ordineGiocatori = new ArrayList<>();

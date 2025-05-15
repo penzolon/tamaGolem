@@ -6,5 +6,5 @@ public class Main {
     public static void main(String[] args) {
         BattagliaGolem battagliaGolem = new BattagliaGolem();
         battagliaGolem.eseguiPartita();
-    }
+    } 
 }

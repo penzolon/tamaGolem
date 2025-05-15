@@ -34,13 +34,34 @@ public class Giocatore {
     }
 
     /**
-     * Gestisce l'invocazione di un TamaGolem da parte del giocatore.
-     *
-     * @param numTamaGolem il numero massimo di TamaGolem che il giocatore può invocare.
-     * @param numPietre il numero di pietre da assegnare al TamaGolem.
-     * @param equilibrio l'oggetto Equilibrio che rappresenta le interazioni tra gli elementi.
-     * @param scortaPietre la scorta comune di pietre disponibile.
-     */
+	 * Gestisce l'invocazione di un TamaGolem da parte del giocatore.
+	 * Se il numero massimo di TamaGolem non è stato ancora raggiunto, crea un nuovo TamaGolem,
+	 * assegna le pietre selezionate dalla scorta comune e lo aggiunge alla lista dei TamaGolem del giocatore.
+	 * Altrimenti, notifica che non è possibile invocare ulteriori TamaGolem.
+	 *
+	 * <p>Il metodo esegue i seguenti passaggi:</p>
+	 * <ol>
+	 *   <li><b>Verifica del limite di TamaGolem:</b> Controlla se il numero di TamaGolem eliminati
+	 *       è inferiore al numero massimo di TamaGolem invocabili.</li>
+	 *   <li><b>Creazione del TamaGolem:</b> Se il limite non è stato raggiunto:
+	 *       <ul>
+	 *         <li>Viene creato un nuovo TamaGolem con la vita iniziale predefinita.</li>
+	 *         <li>Viene chiamato il metodo `selezionaPietre` per assegnare le pietre al TamaGolem.</li>
+	 *         <li>Le pietre selezionate vengono mostrate al giocatore.</li>
+	 *       </ul>
+	 *   </li>
+	 *   <li><b>Notifica del limite raggiunto:</b> Se il limite è stato raggiunto, viene mostrato un messaggio
+	 *       che informa il giocatore che non è possibile invocare ulteriori TamaGolem.</li>
+	 * </ol>
+	 *
+	 * @param numTamaGolem il numero massimo di TamaGolem che il giocatore può invocare.
+	 * @param numPietre il numero di pietre da assegnare al TamaGolem.
+	 * @param equilibrio l'oggetto Equilibrio che rappresenta le interazioni tra gli elementi.
+	 * @param scortaPietre la scorta comune di pietre disponibile.
+	 * @param numTamaEliminati il numero di TamaGolem già eliminati dal giocatore.
+	 * @return il TamaGolem invocato, o `null` se non è stato possibile invocarlo.
+	 */
+
     public TamaGolem invocazioneTamaGolem(int numTamaGolem, int numPietre, Equilibrio equilibrio, ScortaPietre scortaPietre, int numTamaEliminati) {
         TamaGolem nuovoGolem = null;
         numTamaGolemEliminati = numTamaEliminati;
@@ -63,14 +84,32 @@ public class Giocatore {
     }
 
     /**
-     * Permette al giocatore di selezionare un certo numero di pietre dalla scorta comune.
-     *
-     * @param numPietre il numero di pietre da selezionare.
-     * @param equilibrio l'oggetto Equilibrio che rappresenta gli elementi disponibili.
-     * @param scortaPietre la scorta comune di pietre disponibile.
-     * @param tamaGolem il TamaGolem a cui assegnare le pietre selezionate.
-     * @return una deque contenente le pietre selezionate.
-     */
+	 * Permette al giocatore di selezionare un certo numero di pietre dalla scorta comune.
+	 * Le pietre selezionate vengono assegnate al TamaGolem specificato.
+	 *
+	 * <p>Il metodo esegue i seguenti passaggi:</p>
+	 * <ol>
+	 *   <li><b>Visualizzazione delle pietre disponibili:</b> Mostra al giocatore la lista degli elementi
+	 *       disponibili e la quantità di ciascuna pietra nella scorta comune.</li>
+	 *   <li><b>Selezione delle pietre:</b> Richiede al giocatore di selezionare il numero richiesto di pietre.
+	 *       Per ogni selezione:
+	 *       <ul>
+	 *         <li>Verifica se la pietra selezionata è disponibile nella scorta.</li>
+	 *         <li>Se disponibile, rimuove la pietra dalla scorta e la aggiunge alla lista delle pietre del TamaGolem.</li>
+	 *         <li>Se non disponibile, notifica al giocatore e richiede un'altra selezione.</li>
+	 *       </ul>
+	 *   </li>
+	 *   <li><b>Assegnazione delle pietre:</b> Aggiunge le pietre selezionate alla lista delle pietre del TamaGolem.</li>
+	 * </ol>
+	 *
+	 * @param numPietre il numero di pietre da selezionare.
+	 * @param numTamaGolem il numero totale di TamaGolem disponibili per il giocatore.
+	 * @param equilibrio l'oggetto `Equilibrio` che rappresenta gli elementi disponibili.
+	 * @param scortaPietre la scorta comune di pietre disponibile.
+	 * @param tamaGolem il TamaGolem a cui assegnare le pietre selezionate.
+	 * @return una deque contenente le pietre selezionate.
+	 */
+
     public Deque<PietreElementi> selezionaPietre(int numPietre, int numTamaGolem, Equilibrio equilibrio, ScortaPietre scortaPietre, TamaGolem tamaGolem) {
         List<String> listaElementi = equilibrio.getElementi();
         Deque<PietreElementi> listaPietre = tamaGolem.getListaPietre();
