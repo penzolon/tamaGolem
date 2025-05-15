@@ -19,7 +19,8 @@ import java.util.Iterator;
      * e gestisce il flusso della partita.
      */
     public class BattagliaGolem {
-        int numeroElementi;
+		
+		int numeroElementi;
         int numTamaGolem;
         int numPietre;
         int qtScortaComunePietre;
@@ -27,11 +28,11 @@ import java.util.Iterator;
         static Equilibrio equilibrio;
 
         public BattagliaGolem() {
-            this.numeroElementi = 0;
-            this.numTamaGolem = 0;
-            this.numPietre = 0;
-            this.qtScortaComunePietre = 0;
-            this.numPietrePerElemento = 0;
+            this.numeroElementi = CostantiPartita.NUMERO_ELEMENTI_PREDEFINITO;
+            this.numTamaGolem = CostantiPartita.NUMERO_TAMAGOLEM_PREDEFINITO;
+            this.numPietre = CostantiPartita.NUMERO_PIETRE_PREDEFINITO;
+            this.qtScortaComunePietre = CostantiPartita.QUANTITA_SCORTA_PREDEFINITO;
+            this.numPietrePerElemento = CostantiPartita.NUMERO_PIETRE_ELEMENTO_PREDEFINITO;
             BattagliaGolem.equilibrio = null;
         }
 
@@ -64,10 +65,10 @@ import java.util.Iterator;
          * il file degli elementi e l'equilibrio tra gli elementi.
          */
         private void inizializzaPartita() {
-            int numElementi = InterfacciaUtente.inserisciNumeroElementi(0);
+            int numElementi = InterfacciaUtente.inserisciNumeroElementi(CostantiPartita.ZERO);
             this.numeroElementi = numElementi;
-            int numFile = InterfacciaUtente.scegliFileElementi(null, new JsonReader(CostantiString.ELEMENTI_PATH), 1);
-            File file = new JsonReader(CostantiString.ELEMENTI_PATH).getFile(numFile - 1);
+            int numFile = InterfacciaUtente.scegliFileElementi(null, new JsonReader(CostantiString.ELEMENTI_PATH), CostantiPartita.UNO);
+            File file = new JsonReader(CostantiString.ELEMENTI_PATH).getFile(numFile - CostantiPartita.UNO);
             equilibrio = new Equilibrio(numElementi, file);
             calcolaParametriDaInput();
         }
@@ -132,7 +133,7 @@ import java.util.Iterator;
             }
             while (identiche) {
                 Giocatore giocatoreDaReimmettere = queue1.size() > queue2.size() ? giocatori.getFirst() : giocatori.getLast();
-                System.out.printf(CostantiString.MESSAGGIO_LISTE_IDENTICHE + "\n" + CostantiString.MESSAGGIO_REINSERISCI_PIETRE, giocatoreDaReimmettere.getIdGiocatore());
+                System.out.printf(CostantiString.MESSAGGIO_LISTE_IDENTICHE + CostantiString.A_CAPO + CostantiString.MESSAGGIO_REINSERISCI_PIETRE, giocatoreDaReimmettere.getIdGiocatore());
                 InputData.readEmptyString(CostantiString.MESSAGGIO_PREMI_ENTER, false);
                 Deque<PietreElementi> listaPietre = giocatoreDaReimmettere.getListaGolem().getFirst().getListaPietre();
                 for (PietreElementi pietra : listaPietre) {
@@ -144,7 +145,7 @@ import java.util.Iterator;
                 queue2 = giocatori.getLast().getListaGolem().getFirst().getListaPietre();
                 identiche = sonoQueueIdentichePerNome(queue1, queue2);
                 if (!identiche) {
-                    System.out.println("\n" + CostantiString.MESSAGGIO_GOLEM_PRONTI);
+                    System.out.println(CostantiString.A_CAPO + CostantiString.MESSAGGIO_GOLEM_PRONTI);
                     InputData.readEmptyString(CostantiString.MESSAGGIO_PREMI_ENTER, false);
                 }
             }
@@ -157,12 +158,12 @@ import java.util.Iterator;
                 pietreEstratte.add(pietra);
             }
 
-            int interazione = equilibrio.calcolaInterazione(pietreEstratte.get(0).getNome(), pietreEstratte.get(1).getNome());
-            if (interazione > 0) {
+            int interazione = equilibrio.calcolaInterazione(pietreEstratte.get(CostantiPartita.ZERO).getNome(), pietreEstratte.get(CostantiPartita.UNO).getNome());
+            if (interazione > CostantiPartita.ZERO) {
                 gestisciDanni(giocatori.getLast(), interazione, numTamaGolem, scorta, equilibrio);
             } else {
                 interazione = -interazione;
-                if (interazione == 0) {
+                if (interazione == CostantiPartita.ZERO) {
                     System.out.println(CostantiString.MESSAGGIO_NESSUN_DANNO);
                     InputData.readEmptyString(CostantiString.MESSAGGIO_PREMI_ENTER, false);
                 } else {
@@ -208,7 +209,7 @@ import java.util.Iterator;
             TamaGolem tamaGolem = giocatore.getListaGolem().getFirst();
             int vitaTamaGolem = tamaGolem.getVita() - interazione;
 
-            if (vitaTamaGolem <= 0) {
+            if (vitaTamaGolem <= CostantiPartita.ZERO) {
                 giocatore.getListaGolem().removeFirst();
                 System.out.printf(CostantiString.MESSAGGIO_DANNI_FATALI, giocatore.getIdGiocatore(), interazione);
                 System.out.printf(CostantiString.MESSAGGIO_ELIMINATO, giocatore.getIdGiocatore());
@@ -249,7 +250,7 @@ import java.util.Iterator;
             }
 
             for (Giocatore giocatore : ordineGiocatori) {
-                int numTamaGolemEliminati = 0;
+                int numTamaGolemEliminati = CostantiPartita.ZERO;
                 TamaGolem tamaGolem = giocatore.invocazioneTamaGolem(numTamaGolem, numPietre, equilibrio, scortaPietre, numTamaGolemEliminati);
                 giocatore.getListaGolem().add(tamaGolem);
             }

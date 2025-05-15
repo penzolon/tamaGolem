@@ -12,8 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Equilibrio {
-    public static final String A_CAPO = "\n";
-    /**
+	/**
  * Una mappa annidata: per ogni elemento A (String), contiene una sotto-mappa che associa
  * altri elementi B a un valore Integer, che rappresenta l’equilibrio tra A e B.
  */	
@@ -61,7 +60,7 @@ public class Equilibrio {
         for (int i = 0; i < numElementi; i++) {
             int interoEstratto;
             do {
-                interoEstratto = RandomDraws.drawInteger(0, allElementi.length - 1);
+                interoEstratto = RandomDraws.drawInteger(CostantiPartita.ZERO, allElementi.length - CostantiPartita.UNO);
             } while (interiEstratti.contains(interoEstratto));
             interiEstratti.add(interoEstratto);
             elementi.add(allElementi[interoEstratto]);
@@ -75,23 +74,21 @@ public class Equilibrio {
         int intEstratto;
 
         while (!equilibrato) {
-            // Inizializza la mappa con mappe vuote per ogni elemento
             for (String elemento : elementi) {
                 equilibrioMap.put(elemento, new HashMap<>());
-                // Inizializza tutte le interazioni a 0
                 for (String altroElemento : elementi) {
-                    equilibrioMap.get(elemento).put(altroElemento, 0);
+                    equilibrioMap.get(elemento).put(altroElemento, CostantiPartita.ZERO);
                 }
             }
 
             for (int i = 0; i < elementi.size(); i++) {
                 String elementoI = elementi.get(i);
                 for (tentativi = 0; tentativi < CostantiString.MAX_TENTATIVI &&
-                        (sommaInterazioni(elementoI) != 0 || intNullaElemDiversi(elementoI)); tentativi++) {
+                        (sommaInterazioni(elementoI) != CostantiPartita.ZERO || intNullaElemDiversi(elementoI)); tentativi++) {
 
                     for (int j = i + 1; j < elementi.size(); j++) {
                         String elementoJ = elementi.get(j);
-                        intEstratto = RandomDraws.drawInteger(1, CostantiPartita.MASSIMO_POTENZA);
+                        intEstratto = RandomDraws.drawInteger(CostantiPartita.UNO, CostantiPartita.MASSIMO_POTENZA);
 
                         // Assegna un valore casuale positivo o negativo
                         int valore = RandomDraws.drawBoolean() ? intEstratto : -intEstratto;
@@ -125,7 +122,7 @@ public class Equilibrio {
 
         for(String elemI: elementi) {
             if(!elemI.equals(elemento)) {
-                if(equilibrioMap.get(elemento).getOrDefault(elemI, 0) == 0) {
+                if(equilibrioMap.get(elemento).getOrDefault(elemI, CostantiPartita.ZERO) == CostantiPartita.ZERO) {
                     zeri = true;
                     break;
                 }
@@ -174,51 +171,51 @@ public class Equilibrio {
             {AnsiColors.BLUE.toString(), CostantiString.TESTO_DIFESA_FORTE}
         };
 
-        tabella.append(A_CAPO).append(CostantiString.ANGOLO_SUPERIORE_SINISTRO_LEGENDA).append(lineaLegenda)
+        tabella.append(CostantiString.A_CAPO).append(CostantiString.ANGOLO_SUPERIORE_SINISTRO_LEGENDA).append(lineaLegenda)
               .append(CostantiString.TITOLO_LEGENDA)
               .append(lineaLegenda)
               .append(CostantiString.ANGOLO_SUPERIORE_DESTRO_LEGENDA)
-              .append(A_CAPO);
+              .append(CostantiString.A_CAPO);
 
         for (String[] item : legendaItems) {
-            tabella.append(CostantiString.BORDO_VERTICALE_LEGENDA).append(" ")
+            tabella.append(CostantiString.BORDO_VERTICALE_LEGENDA).append(CostantiString.SPAZIO)
                   .append(item[0])
                   .append(centra((int)(CostantiString.LARGHEZZA_COLONNA * 2.5), item[1]))
                   .append(AnsiColors.RESET)
                   .append(CostantiString.BORDO_VERTICALE_LEGENDA)
-                  .append(A_CAPO);
+                  .append(CostantiString.A_CAPO);
         }
 
         tabella.append(CostantiString.ANGOLO_INFERIORE_SINISTRO_LEGENDA)
               .append(CostantiString.LINEA_VERTICALE.repeat(31))
               .append(CostantiString.ANGOLO_INFERIORE_DESTRO_LEGENDA)
               .append("\n\n")
-              .append(CostantiString.INTESTAZIONE_INTERPRETAZIONE).append(A_CAPO)
-              .append(CostantiString.RIGA_ELEMENTI_ATTACCANTI).append(A_CAPO)
-              .append(CostantiString.COLONNA_ELEMENTI_DIFESA).append(A_CAPO + A_CAPO);
+              .append(CostantiString.INTESTAZIONE_INTERPRETAZIONE).append(CostantiString.A_CAPO)
+              .append(CostantiString.RIGA_ELEMENTI_ATTACCANTI).append(CostantiString.A_CAPO)
+              .append(CostantiString.COLONNA_ELEMENTI_DIFESA).append(CostantiString.A_CAPO + CostantiString.A_CAPO);
 
         tabella.append(CostantiString.ANGOLO_SUPERIORE_SINISTRO_TABELLA).append(lineaSeparatrice);
         for (int k = 0; k < elementi.size(); k++) {
             tabella.append(CostantiString.INCROCIO_SUPERIORE).append(lineaOrizzontale);
         }
-        tabella.append(CostantiString.ANGOLO_SUPERIORE_DESTRO_TABELLA).append(A_CAPO);
+        tabella.append(CostantiString.ANGOLO_SUPERIORE_DESTRO_TABELLA).append(CostantiString.A_CAPO);
 
         tabella.append(CostantiString.BORDO_VERTICALE_TABELLA)
-              .append(" ".repeat(4))
+              .append(CostantiString.SPAZIO.repeat(4))
               .append(CostantiString.FRECCIA_GIU)
               .append(CostantiString.DIF)
-              .append(" ".repeat(4));
+              .append(CostantiString.SPAZIO.repeat(4));
         for (String elemento : elementi) {
             tabella.append(CostantiString.BORDO_VERTICALE_TABELLA)
                   .append(centra(CostantiString.LARGHEZZA_COLONNA, elemento));
         }
-        tabella.append(CostantiString.BORDO_VERTICALE_TABELLA).append(A_CAPO);
+        tabella.append(CostantiString.BORDO_VERTICALE_TABELLA).append(CostantiString.A_CAPO);
 
         tabella.append(CostantiString.INCROCIO_SINISTRO).append(lineaSeparatrice);
         for (int k = 0; k < elementi.size(); k++) {
             tabella.append(CostantiString.INCROCIO_CENTRALE).append(lineaOrizzontale);
         }
-        tabella.append(CostantiString.INCROCIO_DESTRO).append(A_CAPO);
+        tabella.append(CostantiString.INCROCIO_DESTRO).append(CostantiString.A_CAPO);
 
         for (int i = 0; i < elementi.size(); i++) {
             String attaccante = elementi.get(i);
@@ -233,16 +230,16 @@ public class Equilibrio {
                              equilibrioMap.get(attaccante).getOrDefault(difensore, 0);
                 tabella.append(CostantiString.BORDO_VERTICALE_TABELLA)
                       .append(formattaNumero(valore))
-                      .append(" ".repeat(6));
+                      .append(CostantiString.SPAZIO.repeat(6));
             }
-            tabella.append(CostantiString.BORDO_VERTICALE_TABELLA).append(A_CAPO);
+            tabella.append(CostantiString.BORDO_VERTICALE_TABELLA).append(CostantiString.A_CAPO);
 
             if (i < elementi.size() - 1) {
                 tabella.append(CostantiString.INCROCIO_SINISTRO).append(lineaSeparatrice);
                 for (int k = 0; k < elementi.size(); k++) {
                     tabella.append(CostantiString.INCROCIO_CENTRALE).append(lineaOrizzontale);
                 }
-                tabella.append(CostantiString.INCROCIO_DESTRO).append(A_CAPO);
+                tabella.append(CostantiString.INCROCIO_DESTRO).append(CostantiString.A_CAPO);
             }
         }
 
@@ -287,13 +284,13 @@ public class Equilibrio {
 
     private String centra(int larghezza, String nome) {
         if (nome.length() > larghezza - 2) {
-            nome = nome.substring(0, larghezza - 3) + "-";
+            nome = nome.substring(0, larghezza - 3) + CostantiString.BARRA;
         }
         
         int spaziTotali = larghezza - nome.length();
         int spaziPrima = spaziTotali / 2;
         int spaziDopo = spaziTotali - spaziPrima;
         
-        return " ".repeat(spaziPrima) + nome + " ".repeat(spaziDopo);
+        return CostantiString.SPAZIO.repeat(spaziPrima) + nome + CostantiString.SPAZIO.repeat(spaziDopo);
     }
 }

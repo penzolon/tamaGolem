@@ -22,7 +22,7 @@ public class Giocatore {
     public Giocatore(int idGiocatore) {
         this.idGiocatore = idGiocatore;
         this.listaGolem = new ArrayList<>();
-        this.numTamaGolemEliminati = 0;
+        this.numTamaGolemEliminati = CostantiPartita.ZERO;
     }
 
     public int getIdGiocatore() {
@@ -75,9 +75,9 @@ public class Giocatore {
         List<String> listaElementi = equilibrio.getElementi();
         Deque<PietreElementi> listaPietre = tamaGolem.getListaPietre();
 
-        if (numTamaGolemEliminati != 0) {
+        if (numTamaGolemEliminati != CostantiPartita.ZERO) {
             System.out.printf(CostantiString.MESSAGGIO_INVOCA_ALTRO_GOLEM, idGiocatore);
-            System.out.printf((CostantiString.MESSAGGIO_GOLEM_RIMASTI) + "%n", (numTamaGolem - numTamaGolemEliminati));
+            System.out.printf((CostantiString.MESSAGGIO_GOLEM_RIMASTI) + CostantiString.A_CAPO, (numTamaGolem - numTamaGolemEliminati));
         } else {
             System.out.printf(CostantiString.MESSAGGIO_TURNO_GIOCATORE, idGiocatore);
         }

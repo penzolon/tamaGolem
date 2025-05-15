@@ -99,7 +99,7 @@ public class JsonReader {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < jsonFiles.size(); i++) {
-            sb.append(i + 1).append(CostantiString.PUNTO).append(jsonFiles.get(i).getName()).append("\n");
+            sb.append(i + 1).append(CostantiString.PUNTO).append(jsonFiles.get(i).getName()).append(CostantiString.A_CAPO);
         }
         return sb.toString();
     }

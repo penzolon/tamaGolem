@@ -1,8 +1,5 @@
 package it.unibs.fp.tamaGolem.Battaglia;
 
-import java.util.Collection;
-import java.util.Deque;
-import java.util.Iterator;
 import java.util.Objects;
 
 /**
@@ -35,11 +32,11 @@ public class PietreElementi {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         PietreElementi other = (PietreElementi) obj;
-        return nome.equals(other.nome); // o confronta i campi rilevanti
+        return nome.equals(other.nome);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nome); // o gli stessi campi usati in equals
+        return Objects.hash(nome);
     }
 }
