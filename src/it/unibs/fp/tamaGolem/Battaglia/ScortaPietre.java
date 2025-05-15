@@ -12,19 +12,10 @@ public class ScortaPietre {
 
     private ArrayList<PietreElementi> scortaPietre;
 
-    /**
-     * Costruttore della classe ScortaPietre.
-     * Inizializza una nuova scorta di pietre vuota.
-     */
     public ScortaPietre() {
         this.scortaPietre = new ArrayList<>();
     }
 
-    /**
-     * Restituisce la lista delle pietre presenti nella scorta.
-     *
-     * @return una lista di oggetti PietreElementi che rappresentano la scorta di pietre.
-     */
     public ArrayList<PietreElementi> getScortaPietre() {
         return scortaPietre;
     }

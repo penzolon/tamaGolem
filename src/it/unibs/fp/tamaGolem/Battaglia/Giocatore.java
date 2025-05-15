@@ -19,31 +19,16 @@ public class Giocatore {
     ArrayList<TamaGolem> listaGolem;
     int numTamaGolemEliminati;
 
-    /**
-     * Costruttore della classe Giocatore.
-     *
-     * @param idGiocatore l'ID univoco del giocatore.
-     */
     public Giocatore(int idGiocatore) {
         this.idGiocatore = idGiocatore;
         this.listaGolem = new ArrayList<>();
         this.numTamaGolemEliminati = 0;
     }
 
-    /**
-     * Restituisce l'ID del giocatore.
-     *
-     * @return l'ID del giocatore.
-     */
     public int getIdGiocatore() {
         return idGiocatore;
     }
 
-    /**
-     * Restituisce la lista dei TamaGolem posseduti dal giocatore.
-     *
-     * @return una lista di oggetti TamaGolem.
-     */
     public ArrayList<TamaGolem> getListaGolem() {
         return listaGolem;
     }

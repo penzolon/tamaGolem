@@ -12,7 +12,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Iterator;
-import java.util.Map;
 
 /**
      * Classe che gestisce la battaglia tra i TamaGolem.
@@ -27,10 +26,6 @@ import java.util.Map;
         int numPietrePerElemento;
         static Equilibrio equilibrio;
 
-        /**
-         * Costruttore della classe BattagliaGolem.
-         * Inizializza i parametri della partita con valori predefiniti.
-         */
         public BattagliaGolem() {
             this.numeroElementi = 0;
             this.numTamaGolem = 0;
@@ -38,51 +33,6 @@ import java.util.Map;
             this.qtScortaComunePietre = 0;
             this.numPietrePerElemento = 0;
             BattagliaGolem.equilibrio = null;
-        }
-
-        /**
-         * Restituisce il numero di elementi della partita.
-         *
-         * @return il numero di elementi.
-         */
-        public int getNumeroElementi() {
-            return numeroElementi;
-        }
-
-        /**
-         * Restituisce il numero di TamaGolem per giocatore.
-         *
-         * @return il numero di TamaGolem.
-         */
-        public int getNumTamaGolem() {
-            return numTamaGolem;
-        }
-
-        /**
-         * Restituisce il numero di pietre per TamaGolem.
-         *
-         * @return il numero di pietre.
-         */
-        public int getNumPietre() {
-            return numPietre;
-        }
-
-        /**
-         * Restituisce la quantità totale di pietre nella scorta comune.
-         *
-         * @return la quantità di pietre nella scorta comune.
-         */
-        public int getQtScortaComunePietre() {
-            return qtScortaComunePietre;
-        }
-
-        /**
-         * Restituisce il numero di pietre per elemento.
-         *
-         * @return il numero di pietre per elemento.
-         */
-        public int getNumPietrePerElemento() {
-            return numPietrePerElemento;
         }
 
         /**
@@ -108,21 +58,6 @@ import java.util.Map;
                 }
 
             } while (InputData.readYesOrNo(CostantiString.DOMANDA_GIOCARE_DI_NUOVO));
-        }
-
-        /**
-         * Verifica se due queue di pietre sono identiche, ovvero se contengono
-         * gli stessi elementi nello stesso ordine.
-         *
-         * @param queue1 la prima queue di pietre.
-         * @param queue2 la seconda queue di pietre.
-         * @return true se le due queue sono identiche, false altrimenti.
-         */
-        private boolean sonoQueueIdentiche(Deque<PietreElementi> queue1, Deque<PietreElementi> queue2) {
-            if (queue1.size() != queue2.size()) {
-                return false;
-            }
-            return queue1.equals(queue2);
         }
 
         /**
@@ -293,23 +228,6 @@ import java.util.Map;
                 tamaGolem.setVita(vitaTamaGolem);
                 System.out.printf(CostantiString.MESSAGGIO_DANNI_SUBITI, giocatore.getIdGiocatore(), interazione);
                 InputData.readEmptyString(CostantiString.MESSAGGIO_PREMI_ENTER, false);
-            }
-        }
-
-        /**
-         * Calcola l'interazione tra due elementi specificati.
-         *
-         * @param elemento1 il primo elemento.
-         * @param elemento2 il secondo elemento.
-         * @param equilibrioMap la mappa che rappresenta le interazioni tra gli elementi.
-         * @return il valore dell'interazione tra i due elementi.
-         * @throws IllegalArgumentException se l'interazione non è trovata.
-         */
-        private int calcolaInterazione(String elemento1, String elemento2, Map<String, Map<String, Integer>> equilibrioMap) {
-            if (equilibrioMap.containsKey(elemento1) && equilibrioMap.get(elemento1).containsKey(elemento2)) {
-                return equilibrioMap.get(elemento1).get(elemento2);
-            } else {
-                throw new IllegalArgumentException(String.format(CostantiString.ERRORE_INTERAZIONE_NON_TROVATA, elemento1, elemento2));
             }
         }
 
