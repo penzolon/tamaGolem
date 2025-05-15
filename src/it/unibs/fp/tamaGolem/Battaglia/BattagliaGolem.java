@@ -10,6 +10,7 @@ import it.unibs.fp.tamaGolem.JsonReader;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -101,6 +102,12 @@ import java.util.Map;
                 while (partitaInCorso(giocatore1, giocatore2)) {
                     eseguiTurno(giocatori, pietreEstratte, scorta);
                 }
+                boolean mostraEquilibrio = InputData.readYesOrNo("Vuoi visualizzare l'equilibrio tra gli elementi");
+                System.out.println();
+                if (mostraEquilibrio){
+                    System.out.println("Equilibrio tra gli elementi: \n" + equilibrio.toString());
+                }
+
             } while (InputData.readYesOrNo("Vuoi giocare di nuovo"));
         }
 
@@ -130,7 +137,6 @@ import java.util.Map;
             File file = new JsonReader(CostantiString.ELEMENTI_PATH).getFile(numFile - 1);
             equilibrio = new Equilibrio(numElementi, file);
             calcolaParametriDaInput();
-            System.out.println(equilibrio.toString());
         }
 
         /**
@@ -182,18 +188,32 @@ import java.util.Map;
          */
         private void eseguiTurno(ArrayList<Giocatore> giocatori, ArrayList<PietreElementi> pietreEstratte, ScortaPietre scorta) {
             pietreEstratte.clear();
-            System.out.println("I Golem sono pronti a scagliare le pietre!");
-            InputData.readEmptyString("Premi enter per continuare...\n", false);
 
             Deque<PietreElementi> queue1 = giocatori.getFirst().getListaGolem().getFirst().getListaPietre();
             Deque<PietreElementi> queue2 = giocatori.getLast().getListaGolem().getFirst().getListaPietre();
 
-            boolean identiche = sonoQueueIdentiche(queue1, queue2);
+            boolean identiche = sonoQueueIdentichePerNome(queue1, queue2);
+            if (!identiche){
+                System.out.println("I Golem sono pronti a scagliare le pietre!");
+                InputData.readEmptyString("Premi enter per continuare...\n", false);
+            }
             while (identiche) {
                 Giocatore giocatoreDaReimmettere = queue1.size() > queue2.size() ? giocatori.getFirst() : giocatori.getLast();
-                System.out.printf("La liste delle pietre dei due TamaGolem sono identiche! Giocatore %d: Reinserisci le pietre:\n", giocatoreDaReimmettere.getIdGiocatore());
-                giocatoreDaReimmettere.getListaGolem().getFirst().getListaPietre().clear();
+                System.out.printf("La liste delle pietre dei due TamaGolem sono identiche! \nGiocatore %d: Reinserisci le pietre!\n\n", giocatoreDaReimmettere.getIdGiocatore());
+                InputData.readEmptyString("Premi enter per continuare...\n", false);
+                Deque<PietreElementi> listaPietre = giocatoreDaReimmettere.getListaGolem().getFirst().getListaPietre();
+                for (PietreElementi pietra : listaPietre) {
+                    scorta.aggiungiPietraAllaScorta(pietra.getNome());
+                }
+                listaPietre.clear();
                 giocatoreDaReimmettere.selezionaPietre(numPietre, numTamaGolem, equilibrio, scorta, giocatoreDaReimmettere.getListaGolem().getFirst());
+                queue1 = giocatori.getFirst().getListaGolem().getFirst().getListaPietre();
+                queue2 = giocatori.getLast().getListaGolem().getFirst().getListaPietre();
+                identiche = sonoQueueIdentichePerNome(queue1, queue2);
+                if (!identiche) {
+                    System.out.println("\nI Golem sono pronti a scagliare le pietre!");
+                    InputData.readEmptyString("Premi enter per continuare...\n", false);
+                }
             }
 
             for (Giocatore giocatore : giocatori) {
@@ -210,14 +230,32 @@ import java.util.Map;
             } else {
                 interazione = -interazione;
                 if (interazione == 0) {
-                    System.out.println("Nessun danno inflitto, i due tamaGolem hanno scagliato due pietre dello stesso elemento!");
+                    System.out.println("Nessun danno inflitto, i due tamaGolem hanno scagliato due pietre dello stesso elemento!\n");
+                    InputData.readEmptyString("Premi enter per continuare...\n", false);
                 } else {
                     gestisciDanni(giocatori.getFirst(), interazione, numTamaGolem, scorta, equilibrio);
                 }
             }
         }
 
-        /**
+
+        private boolean sonoQueueIdentichePerNome(Deque<PietreElementi> q1, Deque<PietreElementi> q2) {
+            if (q1.size() != q2.size()) return false;
+
+            Iterator<PietreElementi> it1 = q1.iterator();
+            Iterator<PietreElementi> it2 = q2.iterator();
+
+            while (it1.hasNext() && it2.hasNext()) {
+                String nome1 = it1.next().getNome().trim();
+                String nome2 = it2.next().getNome().trim();
+                if (!nome1.equals(nome2)) return false;
+            }
+
+            return true;
+        }
+
+
+    /**
          * Gestisce i danni inflitti a un giocatore e al suo TamaGolem.
          *
          * @param giocatore il giocatore che subisce i danni.

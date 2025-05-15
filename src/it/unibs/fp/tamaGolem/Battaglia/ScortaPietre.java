@@ -62,4 +62,8 @@ public class ScortaPietre {
         }
         return trovato;
     }
+
+    public void aggiungiPietraAllaScorta(String nomePietra) {
+        scortaPietre.add(new PietreElementi(nomePietra));
+    }
 }
