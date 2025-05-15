@@ -42,5 +42,4 @@ public class PietreElementi {
     public int hashCode() {
         return Objects.hash(nome); // o gli stessi campi usati in equals
     }
-
 }

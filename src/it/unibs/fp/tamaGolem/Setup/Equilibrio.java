@@ -1,4 +1,4 @@
-package it.unibs.fp.tamaGolem;
+package it.unibs.fp.tamaGolem.Setup;
 
 import it.unibs.fp.myutil.inputOutput.AnsiColors;
 import it.unibs.fp.myutil.inputOutput.RandomDraws;
@@ -12,24 +12,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Equilibrio {
-/**
+    /**
  * Una mappa annidata: per ogni elemento A (String), contiene una sotto-mappa che associa
  * altri elementi B a un valore Integer, che rappresenta l’equilibrio tra A e B.
  */	
     private final Map<String, Map<String, Integer>> equilibrioMap;
-//	Un array statico di tutti gli elementi disponibili. 
     private static String[] allElementi;
-//	La lista di elementi selezionati che verranno usati nell’equilibrio.
     private final List<String> elementi;
 
     public Equilibrio(int numElementi, File file) {
-        allElementi = JsonReader.parseFile(file);
-        if (allElementi.length < numElementi) {
-            throw new IllegalArgumentException("Numero di elementi richiesto superiore a quelli definiti nel file.");
-        }
+        allElementi = caricaElementiDaFile(file);
+        validaNumeroElementi(numElementi);
         equilibrioMap = new HashMap<>();
         elementi = estraiElementi(numElementi);
         generaEquilibrio();
+    }
+
+    private String[] caricaElementiDaFile(File file) {
+        return JsonReader.parseFile(file);
+    }
+
+    private void validaNumeroElementi(int numElementi) {
+        if (allElementi.length < numElementi) {
+            throw new IllegalArgumentException(CostantiString.ERRORE_NUMERO_ELEMENTI);
+        }
     }
 
     public List<String> getElementi() {
@@ -42,14 +48,12 @@ public class Equilibrio {
 
     /**
      * Estrae un numero specificato di elementi unici da `allElementi` e li aggiunge alla lista `elementi`.
-     * 
      * Il metodo esegue un'estrazione casuale di indici da `allElementi`, assicurandosi che ogni indice 
      * estratto sia unico, in modo da evitare duplicazioni. Gli indici estratti vengono memorizzati nella 
      * lista `interiEstratti`, mentre gli elementi corrispondenti agli indici estratti vengono aggiunti alla lista 
      * `elementi`. Questo processo garantisce che la lista `elementi` contenga esattamente `numElementi` 
      * elementi unici selezionati casualmente da `allElementi`.
      */
-    
     private List<String> estraiElementi(int numElementi) {
         List<Integer> interiEstratti = new ArrayList<>();
         List<String> elementi = new ArrayList<>();
@@ -86,7 +90,7 @@ public class Equilibrio {
 
                     for (int j = i + 1; j < elementi.size(); j++) {
                         String elementoJ = elementi.get(j);
-                        intEstratto = RandomDraws.drawInteger(1, CostantiString.MASSIMO_POTENZA);
+                        intEstratto = RandomDraws.drawInteger(1, CostantiPartita.MASSIMO_POTENZA);
 
                         // Assegna un valore casuale positivo o negativo
                         int valore = RandomDraws.drawBoolean() ? intEstratto : -intEstratto;

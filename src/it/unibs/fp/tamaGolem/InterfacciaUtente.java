@@ -1,7 +1,8 @@
 package it.unibs.fp.tamaGolem;
 
 import it.unibs.fp.myutil.inputOutput.InputData;
-import it.unibs.fp.tamaGolem.Costanti.CostantiString;
+import it.unibs.fp.tamaGolem.Costanti.CostantiPartita;
+import it.unibs.fp.tamaGolem.Setup.JsonReader;
 
 import java.io.File;
 
@@ -43,7 +44,7 @@ public class InterfacciaUtente {
 
     private static int getNumElementi() {
             int numElementi;
-            numElementi = InputData.readIntegerBetween("Inserisci il numero di elementi da considerare: ", CostantiString.MIN_ELEMENTI, CostantiString.MAX_ELEMENTI) ;
+            numElementi = InputData.readIntegerBetween("Inserisci il numero di elementi da considerare: ", CostantiPartita.MIN_ELEMENTI, CostantiPartita.MAX_ELEMENTI) ;
             return numElementi;
         }
 }

@@ -1,6 +1,6 @@
 package it.unibs.fp.tamaGolem.Battaglia;
 
-import it.unibs.fp.tamaGolem.Equilibrio;
+import it.unibs.fp.tamaGolem.Setup.Equilibrio;
 
 import java.util.ArrayList;
 
@@ -33,16 +33,14 @@ public class ScortaPietre {
      * Aggiunge pietre alla scorta in base al numero di pietre per elemento e agli elementi disponibili.
      *
      * @param numPietrePerElemento il numero di pietre da aggiungere per ogni elemento.
-     * @param equilibrio l'oggetto Equilibrio che contiene gli elementi disponibili.
-     * @return la lista aggiornata delle pietre nella scorta.
+     * @param equilibrio           l'oggetto Equilibrio che contiene gli elementi disponibili.
      */
-    public ArrayList<PietreElementi> aggiungiPietre(int numPietrePerElemento, Equilibrio equilibrio) {
+    public void aggiungiPietre(int numPietrePerElemento, Equilibrio equilibrio) {
         for (int i = 0; i < numPietrePerElemento; i++) {
             for (String pietra : equilibrio.getElementi()) {
                 scortaPietre.add(new PietreElementi(pietra));
             }
         }
-        return scortaPietre;
     }
 
     /**
