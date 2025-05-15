@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Equilibrio {
+    public static final String A_CAPO = "\n";
     /**
  * Una mappa annidata: per ogni elemento A (String), contiene una sotto-mappa che associa
  * altri elementi B a un valore Integer, che rappresenta l’equilibrio tra A e B.
@@ -173,11 +174,11 @@ public class Equilibrio {
             {AnsiColors.BLUE.toString(), CostantiString.TESTO_DIFESA_FORTE}
         };
 
-        tabella.append(CostantiString.ANGOLO_SUPERIORE_SINISTRO_LEGENDA).append(lineaLegenda)
+        tabella.append(A_CAPO).append(CostantiString.ANGOLO_SUPERIORE_SINISTRO_LEGENDA).append(lineaLegenda)
               .append(CostantiString.TITOLO_LEGENDA)
               .append(lineaLegenda)
               .append(CostantiString.ANGOLO_SUPERIORE_DESTRO_LEGENDA)
-              .append("\n");
+              .append(A_CAPO);
 
         for (String[] item : legendaItems) {
             tabella.append(CostantiString.BORDO_VERTICALE_LEGENDA).append(" ")
@@ -185,22 +186,22 @@ public class Equilibrio {
                   .append(centra((int)(CostantiString.LARGHEZZA_COLONNA * 2.5), item[1]))
                   .append(AnsiColors.RESET)
                   .append(CostantiString.BORDO_VERTICALE_LEGENDA)
-                  .append("\n");
+                  .append(A_CAPO);
         }
 
         tabella.append(CostantiString.ANGOLO_INFERIORE_SINISTRO_LEGENDA)
               .append(CostantiString.LINEA_VERTICALE.repeat(31))
               .append(CostantiString.ANGOLO_INFERIORE_DESTRO_LEGENDA)
               .append("\n\n")
-              .append(CostantiString.INTESTAZIONE_INTERPRETAZIONE).append("\n")
-              .append(CostantiString.RIGA_ELEMENTI_ATTACCANTI).append("\n")
-              .append(CostantiString.COLONNA_ELEMENTI_DIFESA).append("\n\n");
+              .append(CostantiString.INTESTAZIONE_INTERPRETAZIONE).append(A_CAPO)
+              .append(CostantiString.RIGA_ELEMENTI_ATTACCANTI).append(A_CAPO)
+              .append(CostantiString.COLONNA_ELEMENTI_DIFESA).append(A_CAPO + A_CAPO);
 
         tabella.append(CostantiString.ANGOLO_SUPERIORE_SINISTRO_TABELLA).append(lineaSeparatrice);
         for (int k = 0; k < elementi.size(); k++) {
             tabella.append(CostantiString.INCROCIO_SUPERIORE).append(lineaOrizzontale);
         }
-        tabella.append(CostantiString.ANGOLO_SUPERIORE_DESTRO_TABELLA).append("\n");
+        tabella.append(CostantiString.ANGOLO_SUPERIORE_DESTRO_TABELLA).append(A_CAPO);
 
         tabella.append(CostantiString.BORDO_VERTICALE_TABELLA)
               .append(" ".repeat(4))
@@ -211,13 +212,13 @@ public class Equilibrio {
             tabella.append(CostantiString.BORDO_VERTICALE_TABELLA)
                   .append(centra(CostantiString.LARGHEZZA_COLONNA, elemento));
         }
-        tabella.append(CostantiString.BORDO_VERTICALE_TABELLA).append("\n");
+        tabella.append(CostantiString.BORDO_VERTICALE_TABELLA).append(A_CAPO);
 
         tabella.append(CostantiString.INCROCIO_SINISTRO).append(lineaSeparatrice);
         for (int k = 0; k < elementi.size(); k++) {
             tabella.append(CostantiString.INCROCIO_CENTRALE).append(lineaOrizzontale);
         }
-        tabella.append(CostantiString.INCROCIO_DESTRO).append("\n");
+        tabella.append(CostantiString.INCROCIO_DESTRO).append(A_CAPO);
 
         for (int i = 0; i < elementi.size(); i++) {
             String attaccante = elementi.get(i);
@@ -234,14 +235,14 @@ public class Equilibrio {
                       .append(formattaNumero(valore))
                       .append(" ".repeat(6));
             }
-            tabella.append(CostantiString.BORDO_VERTICALE_TABELLA).append("\n");
+            tabella.append(CostantiString.BORDO_VERTICALE_TABELLA).append(A_CAPO);
 
             if (i < elementi.size() - 1) {
                 tabella.append(CostantiString.INCROCIO_SINISTRO).append(lineaSeparatrice);
                 for (int k = 0; k < elementi.size(); k++) {
                     tabella.append(CostantiString.INCROCIO_CENTRALE).append(lineaOrizzontale);
                 }
-                tabella.append(CostantiString.INCROCIO_DESTRO).append("\n");
+                tabella.append(CostantiString.INCROCIO_DESTRO).append(A_CAPO);
             }
         }
 

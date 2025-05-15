@@ -52,7 +52,6 @@ import java.util.Iterator;
                     eseguiTurno(giocatori, pietreEstratte, scorta);
                 }
                 boolean mostraEquilibrio = InputData.readYesOrNo(CostantiString.DOMANDA_VISUALIZZA_EQUILIBRIO);
-                System.out.println();
                 if (mostraEquilibrio) {
                     System.out.println(CostantiString.MESSAGGIO_EQUILIBRIO + equilibrio.toString());
                 }
@@ -195,7 +194,6 @@ import java.util.Iterator;
 
             return true;
         }
-
 
         /**
          * Gestisce i danni inflitti a un giocatore e al suo TamaGolem.
