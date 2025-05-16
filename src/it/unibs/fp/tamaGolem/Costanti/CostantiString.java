@@ -16,13 +16,13 @@ public class CostantiString {
     public static final String DIF 				= "Dif";
     public static final String ATT 				= "Att";
 
-    public static final int SOGLIA_DEBOLE = 4;
+    public static final int SOGLIA_DEBOLE = 6;
     
     public static final String TITOLO_LEGENDA 		= " LEGENDA ";
-    public static final String TESTO_ATTACCO_DEBOLE = "▲ 1-4: Attacco moderato";
-    public static final String TESTO_ATTACCO_FORTE 	= "▲ 5: Attacco forte";
-    public static final String TESTO_DIFESA_DEBOLE 	= "▼ -1/-4: Difesa moderata";
-    public static final String TESTO_DIFESA_FORTE 	= "▼ -5: Difesa forte";
+    public static final String TESTO_ATTACCO_DEBOLE = "▲ 1-6: Attacco moderato";
+    public static final String TESTO_ATTACCO_FORTE 	= "▲ 7-10: Attacco forte";
+    public static final String TESTO_DIFESA_DEBOLE 	= "▼ -1/-6: Difesa moderata";
+    public static final String TESTO_DIFESA_FORTE 	= "▼ -7/-10: Difesa forte";
     
     public static final String INTESTAZIONE_INTERPRETAZIONE = "Come interpretare la matrice:";
     public static final String RIGA_ELEMENTI_ATTACCANTI 	= "► Righe: Elementi attaccanti";

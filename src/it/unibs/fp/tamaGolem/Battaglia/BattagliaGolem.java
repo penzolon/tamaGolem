@@ -20,12 +20,12 @@ import java.util.Iterator;
      */
     public class BattagliaGolem {
 		
-		int numeroElementi;
-        int numTamaGolem;
-        int numPietre;
-        int qtScortaComunePietre;
-        int numPietrePerElemento;
-        static Equilibrio equilibrio;
+		private int numeroElementi;
+        private int numTamaGolem;
+        private int numPietre;
+        private int qtScortaComunePietre;
+        private int numPietrePerElemento;
+        private Equilibrio equilibrio;
 
         public BattagliaGolem() {
             this.numeroElementi = CostantiPartita.NUMERO_ELEMENTI_PREDEFINITO;
@@ -33,7 +33,7 @@ import java.util.Iterator;
             this.numPietre = CostantiPartita.NUMERO_PIETRE_PREDEFINITO;
             this.qtScortaComunePietre = CostantiPartita.QUANTITA_SCORTA_PREDEFINITO;
             this.numPietrePerElemento = CostantiPartita.NUMERO_PIETRE_ELEMENTO_PREDEFINITO;
-            BattagliaGolem.equilibrio = null;
+            this.equilibrio = null;
         }
 
         /**
